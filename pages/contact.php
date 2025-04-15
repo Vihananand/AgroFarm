@@ -6,13 +6,11 @@ include_once '../includes/config.php';
 include_once '../includes/header.php';
 include_once '../includes/navbar.php';
 
-// Process form submission
 $form_submitted = false;
 $form_error = false;
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Basic validation
     $name = sanitize($_POST['name'] ?? '');
     $email = sanitize($_POST['email'] ?? '');
     $subject = sanitize($_POST['subject'] ?? '');
@@ -25,16 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $form_error = true;
         $error_message = 'Please provide a valid email address.';
     } else {
-        // In a real application, you would send an email here
-        // For this example, we'll just set a success flag
         $form_submitted = true;
         
-        // Optional: Save to database
         try {
             $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
             $stmt->execute([$name, $email, $subject, $message]);
         } catch (PDOException $e) {
-            // Continue even if database save fails
         }
     }
 }
@@ -364,7 +358,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </section>
 
 <script>
-    // FAQ Accordion functionality
     document.addEventListener('DOMContentLoaded', function() {
         const faqToggles = document.querySelectorAll('.faq-toggle');
         
@@ -373,10 +366,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const content = this.nextElementSibling;
                 const icon = this.querySelector('i');
                 
-                // Toggle content visibility
                 content.classList.toggle('hidden');
                 
-                // Toggle icon
                 if (content.classList.contains('hidden')) {
                     icon.classList.remove('fa-minus');
                     icon.classList.add('fa-plus');
@@ -387,7 +378,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     icon.style.transform = 'rotate(180deg)';
                 }
                 
-                // Close other FAQ items
                 faqToggles.forEach(otherToggle => {
                     if (otherToggle !== toggle) {
                         const otherContent = otherToggle.nextElementSibling;

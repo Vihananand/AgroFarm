@@ -1,5 +1,4 @@
 <?php
-// Use sample testimonials instead of database query
 $testimonials = [
     [
         'name' => 'John Smith',
@@ -77,21 +76,18 @@ $testimonials = [
         <?php endforeach; ?>
     </div>
     
-    <!-- Navigation buttons -->
     <div class="swiper-button-next testimonials-next absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 text-green-600">
         <i class="fas fa-chevron-right text-xs"></i>
     </div>
     <div class="swiper-button-prev testimonials-prev absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md z-10 text-green-600">
         <i class="fas fa-chevron-left text-xs"></i>
     </div>
-    
-    <!-- Pagination dots -->
+
     <div class="swiper-pagination testimonials-pagination absolute bottom-0 left-0 right-0 text-center"></div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Check if Swiper is loaded
         if (typeof Swiper !== 'undefined') {
             const testimonialsSwiper = new Swiper('.swiper-testimonials', {
                 slidesPerView: 1,
@@ -120,12 +116,10 @@ $testimonials = [
                 }
             });
             
-            // Remove default Swiper button styling
             document.querySelector('.testimonials-next').classList.remove('swiper-button-next');
             document.querySelector('.testimonials-prev').classList.remove('swiper-button-prev');
         } else {
             console.error('Swiper is not loaded');
-            // Add fallback display for testimonials when Swiper isn't available
             document.querySelector('.swiper-testimonials').innerHTML = `
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
                     <?php foreach ($testimonials as $testimonial): ?>

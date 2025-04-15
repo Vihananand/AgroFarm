@@ -76,10 +76,8 @@
 <!-- GSAP Animation Initialization -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize GSAP ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
         
-        // Animate elements with data-gsap attribute
         const fadeElements = document.querySelectorAll('[data-gsap="fade-in"]');
         fadeElements.forEach(element => {
             gsap.from(element, {
@@ -94,7 +92,6 @@
             });
         });
         
-        // Animate from right
         const fadeRightElements = document.querySelectorAll('[data-gsap="fade-right"]');
         fadeRightElements.forEach(element => {
             gsap.from(element, {
@@ -110,7 +107,6 @@
             });
         });
         
-        // Animate from left
         const fadeLeftElements = document.querySelectorAll('[data-gsap="fade-left"]');
         fadeLeftElements.forEach(element => {
             gsap.from(element, {
@@ -126,7 +122,6 @@
             });
         });
         
-        // Animate from bottom (fade up)
         const fadeUpElements = document.querySelectorAll('[data-gsap="fade-up"]');
         fadeUpElements.forEach(element => {
             const delay = element.getAttribute('data-delay') || 0;

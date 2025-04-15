@@ -1,5 +1,4 @@
 <?php
-// Instead of querying the database, create random product data
 $featured_products = [
     [
         'id' => 1,
@@ -47,7 +46,6 @@ $featured_products = [
     ]
 ];
 
-// Display featured products
 foreach ($featured_products as $product) {
 ?>
         <div class="product-card" data-gsap="fade-up">
@@ -114,31 +112,10 @@ foreach ($featured_products as $product) {
 }
 ?>
 
-<!-- Quick View Modal Placeholder (will be populated via JS) -->
-<div id="quick-view-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
-        <div class="flex justify-between items-center p-4 border-b">
-            <h3 class="text-xl font-bold">Quick View</h3>
-            <button id="close-quick-view" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div id="quick-view-content" class="p-4">
-            <!-- Content will be loaded dynamically -->
-            <div class="flex justify-center">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-    // Add to cart functionality
     function addToCart(productId) {
-        // Default quantity 1 for featured products
         const quantity = 1;
         
-        // AJAX request to add item to cart
         fetch('<?php echo SITE_URL; ?>/includes/ajax/add_to_cart.php', {
             method: 'POST',
             headers: {
@@ -149,16 +126,13 @@ foreach ($featured_products as $product) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update cart count in the navbar
                 const cartCountElement = document.getElementById('cart-count');
                 if (cartCountElement) {
                     cartCountElement.textContent = data.cart_count;
                 }
                 
-                // Show success message
                 alert(data.message || 'Product added to cart successfully');
             } else {
-                // Show error message
                 alert(data.message || 'Failed to add product to cart');
             }
         })
@@ -168,9 +142,7 @@ foreach ($featured_products as $product) {
         });
     }
     
-    // Add to wishlist functionality
     function addToWishlist(productId) {
-        // AJAX request to add item to wishlist
         fetch('<?php echo SITE_URL; ?>/includes/ajax/add_to_wishlist.php', {
             method: 'POST',
             headers: {
@@ -181,16 +153,13 @@ foreach ($featured_products as $product) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update wishlist count in the navbar
                 const wishlistCountElement = document.getElementById('wishlist-count');
                 if (wishlistCountElement) {
                     wishlistCountElement.textContent = data.wishlist_count;
                 }
                 
-                // Show success message
                 alert(data.message || 'Product added to wishlist successfully');
             } else {
-                // Show error message
                 alert(data.message || 'Failed to add product to wishlist');
             }
         })
@@ -200,32 +169,50 @@ foreach ($featured_products as $product) {
         });
     }
     
-    // Quick view functionality
     function quickView(productId) {
         const modal = document.getElementById('quick-view-modal');
-        const content = document.getElementById('quick-view-content');
+        const modalContent = document.getElementById('quick-view-content');
+        const loadingSpinner = document.getElementById('quick-view-loading');
         
-        // Show modal
+        if (!modal || !modalContent) {
+            window.location.href = '<?php echo SITE_URL; ?>/pages/product.php?id=' + productId;
+            return;
+        }
+        
         modal.classList.remove('hidden');
+        if (loadingSpinner) {
+            loadingSpinner.classList.remove('hidden');
+            modalContent.classList.add('hidden');
+        }
         
-        // Sample product data for demo
-        let productData = '';
-        
-        // Find the product based on ID
         <?php foreach ($featured_products as $product): ?>
         if (productId === <?php echo $product['id']; ?>) {
-            productData = `
+            if (loadingSpinner) {
+                loadingSpinner.classList.add('hidden');
+                modalContent.classList.remove('hidden');
+            }
+
+            const productHTML = `
                 <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Product Image -->
                     <div class="product-image">
                         <img src="<?php echo $product['image']; ?>" 
-                             alt="<?php echo $product['name']; ?>"
-                             class="w-full h-auto rounded-lg">
-                    </div>
-                    <div class="product-details">
-                        <h2 class="text-2xl font-bold mb-2"><?php echo $product['name']; ?></h2>
-                        <div class="text-sm text-green-600 mb-4">
-                            Category: <?php echo $product['category_name']; ?>
+                            alt="<?php echo $product['name']; ?>" 
+                            class="w-full h-auto object-cover rounded-lg">
+                        <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                            Sale
                         </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Product Details -->
+                    <div class="product-details">
+                        <span class="text-sm text-green-600">
+                            <?php echo $product['category_name']; ?>
+                        </span>
+                        <h2 class="text-2xl font-bold mb-2"><?php echo $product['name']; ?></h2>
+                        
                         <div class="price-wrapper mb-4">
                             <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
                             <span class="text-2xl font-bold text-green-600">$<?php echo number_format($product['sale_price'], 2); ?></span>
@@ -234,44 +221,60 @@ foreach ($featured_products as $product) {
                             <span class="text-2xl font-bold text-green-600">$<?php echo number_format($product['price'], 2); ?></span>
                             <?php endif; ?>
                         </div>
+                        
                         <div class="stock mb-4">
                             <?php if ($product['stock'] > 0): ?>
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded">In Stock (<?php echo $product['stock']; ?> available)</span>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                                In Stock (<?php echo $product['stock']; ?> available)
+                            </span>
                             <?php else: ?>
-                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Out of Stock</span>
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+                                Out of Stock
+                            </span>
                             <?php endif; ?>
                         </div>
-                        <div class="description mb-4">
-                            <p>This is a sample product description. In a real application, this would contain detailed information about the product.</p>
+                        
+                        <div class="description mb-6">
+                            <p class="text-gray-700">This is a sample product description. In a real application, this would contain detailed information about the product.</p>
                         </div>
-                        <div class="actions flex gap-4">
+                        
+                        <?php if ($product['stock'] > 0): ?>
+                        <div class="actions flex gap-4 mb-6">
                             <button onclick="addToCart(<?php echo $product['id']; ?>)" 
-                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition-colors">
-                                Add to Cart
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition-colors flex items-center justify-center">
+                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
                             </button>
                             <button onclick="addToWishlist(<?php echo $product['id']; ?>)" 
-                                    class="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 py-2 px-4 rounded-md transition-colors">
-                                <i class="far fa-heart"></i>
+                                    class="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 py-3 px-6 rounded-md transition-colors flex items-center justify-center">
+                                <i class="far fa-heart mr-2"></i>
                             </button>
                         </div>
+                        <?php else: ?>
+                        <div class="mb-6">
+                            <button class="w-full bg-gray-300 text-gray-600 cursor-not-allowed py-3 px-6 rounded-md flex items-center justify-center">
+                                <i class="fas fa-ban mr-2"></i> Out of Stock
+                            </button>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <a href="<?php echo SITE_URL; ?>/pages/product.php?slug=<?php echo $product['slug']; ?>" 
+                           class="text-green-600 hover:text-green-800 flex items-center">
+                            <span>View Full Details</span>
+                            <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                        </a>
                     </div>
                 </div>
             `;
+            
+            modalContent.innerHTML = productHTML;
+            return;
         }
         <?php endforeach; ?>
         
-        content.innerHTML = productData || '<p class="text-center text-gray-500">Product details not available</p>';
-    }
-    
-    // Close quick view modal
-    document.getElementById('close-quick-view').addEventListener('click', function() {
-        document.getElementById('quick-view-modal').classList.add('hidden');
-    });
-    
-    // Close modal when clicking outside content
-    document.getElementById('quick-view-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.add('hidden');
+        if (loadingSpinner) {
+            loadingSpinner.classList.add('hidden');
+            modalContent.classList.remove('hidden');
         }
-    });
+        modalContent.innerHTML = '<p class="text-center text-red-600">Product not found</p>';
+    }
 </script>

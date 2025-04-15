@@ -4,13 +4,11 @@ $page_description = "Request a custom product or item not available in our curre
 
 include_once '../includes/config.php';
 
-// Process form submission
 $form_submitted = false;
 $form_error = false;
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Basic validation
     $name = sanitize($_POST['name'] ?? '');
     $email = sanitize($_POST['email'] ?? '');
     $phone = sanitize($_POST['phone'] ?? '');
@@ -30,15 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $form_error = true;
         $error_message = 'Please select a quantity.';
     } else {
-        // In a real application, you would save to database and/or send an email
         $form_submitted = true;
         
-        // Optional: Save to database
         try {
             $stmt = $conn->prepare("INSERT INTO item_requests (name, email, phone, item_name, item_description, quantity, category, urgency) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$name, $email, $phone, $item_name, $item_description, $quantity, $category, $urgency]);
         } catch (PDOException $e) {
-            // Continue even if database save fails
+            
         }
     }
 }

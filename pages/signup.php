@@ -4,12 +4,10 @@ $page_description = "Create an AgroFarm account to start shopping for agricultur
 
 include_once '../includes/config.php';
 
-// Redirect if already logged in
 if (isLoggedIn()) {
     redirect(SITE_URL);
 }
 
-// Process registration form
 $error = '';
 $success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
-    // Validate input
     if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($confirm_password)) {
         $error = 'All fields are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -30,32 +27,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Passwords do not match.';
     } else {
         try {
-            // Check if email already exists
             $stmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
             $stmt->execute([$email]);
             if ($stmt->fetchColumn() > 0) {
                 $error = 'This email is already registered. Please use a different email or login.';
             } else {
-                // Register the user
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");
                 $result = $stmt->execute([$first_name, $last_name, $email, $hashed_password]);
                 
                 if ($result) {
-                    // Registration successful
                     $user_id = $conn->lastInsertId();
                     
-                    // Auto login
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['user_name'] = $first_name;
                     $_SESSION['user_email'] = $email;
                     $_SESSION['user_role'] = 'customer';
                     
-                    // Set flash message
                     setFlashMessage('success', 'Registration successful! Welcome to AgroFarm.');
                     
-                    // Redirect to requested page or dashboard
                     $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : SITE_URL;
                     redirect($redirect);
                 } else {
@@ -241,7 +232,6 @@ include_once '../includes/navbar.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Toggle password visibility
         const togglePassword = document.getElementById('toggle-password');
         const passwordInput = document.getElementById('password');
         
@@ -249,7 +239,6 @@ include_once '../includes/navbar.php';
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             
-            // Toggle icon
             const icon = this.querySelector('i');
             if (type === 'password') {
                 icon.classList.remove('fa-eye');

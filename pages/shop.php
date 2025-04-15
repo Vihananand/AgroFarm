@@ -6,21 +6,16 @@ include_once '../includes/config.php';
 include_once '../includes/header.php';
 include_once '../includes/navbar.php';
 
-// Get category filter from URL
 $category_slug = isset($_GET['category']) ? sanitize($_GET['category']) : '';
 
-// Get search term if provided
 $search_term = isset($_GET['q']) ? sanitize($_GET['q']) : '';
 
-// Get sorting option
 $sort_by = isset($_GET['sort']) ? sanitize($_GET['sort']) : 'newest';
 
-// Pagination settings
 $items_per_page = 12;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
-// Define sample categories
 $categories = [
     [
         'id' => 1,
@@ -54,161 +49,129 @@ $categories = [
     ]
 ];
 
-// Define sample products
 $all_products = [
     [
         'id' => 1,
         'name' => 'Organic Fertilizer',
         'slug' => 'organic-fertilizer',
-        'description' => 'Premium organic fertilizer for all types of plants',
         'image' => 'https://picsum.photos/id/134/600/400',
         'price' => 29.99,
         'sale_price' => 24.99,
         'stock' => 15,
-        'category_id' => 2,
         'category_name' => 'Fertilizers',
         'category_slug' => 'fertilizers',
-        'featured' => 1,
         'created_at' => '2023-06-15'
     ],
     [
         'id' => 2,
         'name' => 'Premium Garden Hoe',
         'slug' => 'premium-garden-hoe',
-        'description' => 'Durable garden hoe with comfortable grip',
         'image' => 'https://picsum.photos/id/150/600/400',
         'price' => 49.99,
         'sale_price' => null,
         'stock' => 8,
-        'category_id' => 3,
         'category_name' => 'Equipment',
         'category_slug' => 'equipment',
-        'featured' => 0,
         'created_at' => '2023-07-20'
     ],
     [
         'id' => 3,
         'name' => 'Organic Tomato Seeds',
         'slug' => 'organic-tomato-seeds',
-        'description' => 'Heirloom tomato seeds for your garden',
         'image' => 'https://picsum.photos/id/145/600/400',
         'price' => 5.99,
         'sale_price' => 4.99,
         'stock' => 50,
-        'category_id' => 5,
         'category_name' => 'Seeds',
         'category_slug' => 'seeds',
-        'featured' => 1,
         'created_at' => '2023-08-05'
     ],
     [
         'id' => 4,
         'name' => 'Mini Tractor',
         'slug' => 'mini-tractor',
-        'description' => 'Compact tractor for small farms and gardens',
         'image' => 'https://picsum.photos/id/167/600/400',
         'price' => 2999.99,
         'sale_price' => 2799.99,
         'stock' => 0,
-        'category_id' => 1,
-        'category_name' => 'Farm Machinery',
+        'category_name' => 'Machinery',
         'category_slug' => 'machinery',
-        'featured' => 1,
         'created_at' => '2023-05-10'
     ],
     [
         'id' => 5,
         'name' => 'Fresh Apples (5kg)',
-        'slug' => 'fresh-apples',
-        'description' => 'Organic farm-fresh apples',
+        'slug' => 'fresh-apples-5kg',
         'image' => 'https://picsum.photos/id/102/600/400',
         'price' => 12.99,
         'sale_price' => null,
-        'stock' => 20,
-        'category_id' => 4,
+        'stock' => 30,
         'category_name' => 'Fresh Produce',
-        'category_slug' => 'produce',
-        'featured' => 0,
+        'category_slug' => 'fresh-produce',
         'created_at' => '2023-09-01'
     ],
     [
         'id' => 6,
         'name' => 'Gardening Gloves',
         'slug' => 'gardening-gloves',
-        'description' => 'Durable and comfortable gardening gloves',
         'image' => 'https://picsum.photos/id/160/600/400',
-        'price' => 15.99,
-        'sale_price' => 12.99,
-        'stock' => 30,
-        'category_id' => 3,
-        'category_name' => 'Equipment',
-        'category_slug' => 'equipment',
-        'featured' => 0,
+        'price' => 9.99,
+        'sale_price' => null,
+        'stock' => 20,
+        'category_name' => 'Accessories',
+        'category_slug' => 'accessories',
         'created_at' => '2023-06-25'
     ],
     [
         'id' => 7,
         'name' => 'Carrot Seeds',
         'slug' => 'carrot-seeds',
-        'description' => 'Premium carrot seeds for your vegetable garden',
         'image' => 'https://picsum.photos/id/292/600/400',
         'price' => 3.99,
         'sale_price' => null,
         'stock' => 45,
-        'category_id' => 5,
         'category_name' => 'Seeds',
         'category_slug' => 'seeds',
-        'featured' => 0,
         'created_at' => '2023-07-10'
     ],
     [
         'id' => 8,
         'name' => 'Irrigation System',
         'slug' => 'irrigation-system',
-        'description' => 'Automated drip irrigation system for efficient watering',
         'image' => 'https://picsum.photos/id/117/600/400',
         'price' => 199.99,
-        'sale_price' => 179.99,
-        'stock' => 10,
-        'category_id' => 3,
+        'sale_price' => 169.99,
+        'stock' => 5,
         'category_name' => 'Equipment',
         'category_slug' => 'equipment',
-        'featured' => 1,
         'created_at' => '2023-05-20'
     ],
     [
         'id' => 9,
         'name' => 'Potato Harvester',
         'slug' => 'potato-harvester',
-        'description' => 'Efficient potato harvesting machine for medium-sized farms',
         'image' => 'https://picsum.photos/id/239/600/400',
-        'price' => 1499.99,
+        'price' => 599.99,
         'sale_price' => null,
-        'stock' => 5,
-        'category_id' => 1,
-        'category_name' => 'Farm Machinery',
+        'stock' => 3,
+        'category_name' => 'Machinery',
         'category_slug' => 'machinery',
-        'featured' => 0,
         'created_at' => '2023-08-10'
     ],
     [
         'id' => 10,
         'name' => 'Organic Strawberries (1kg)',
-        'slug' => 'organic-strawberries',
-        'description' => 'Sweet and juicy organic strawberries',
+        'slug' => 'organic-strawberries-1kg',
         'image' => 'https://picsum.photos/id/1080/600/400',
-        'price' => 8.99,
-        'sale_price' => 7.99,
-        'stock' => 15,
-        'category_id' => 4,
+        'price' => 14.99,
+        'sale_price' => 11.99,
+        'stock' => 25,
         'category_name' => 'Fresh Produce',
-        'category_slug' => 'produce',
-        'featured' => 1,
+        'category_slug' => 'fresh-produce',
         'created_at' => '2023-09-05'
     ]
 ];
 
-// Filter products based on category
 $filtered_products = $all_products;
 if (!empty($category_slug)) {
     $filtered_products = array_filter($all_products, function($product) use ($category_slug) {
@@ -216,7 +179,6 @@ if (!empty($category_slug)) {
     });
 }
 
-// Filter products based on search term
 if (!empty($search_term)) {
     $filtered_products = array_filter($filtered_products, function($product) use ($search_term) {
         return (stripos($product['name'], $search_term) !== false || 
@@ -224,7 +186,6 @@ if (!empty($search_term)) {
     });
 }
 
-// Sort products
 usort($filtered_products, function($a, $b) use ($sort_by) {
     switch ($sort_by) {
         case 'price_low':
@@ -232,18 +193,20 @@ usort($filtered_products, function($a, $b) use ($sort_by) {
         case 'price_high':
             return $b['price'] <=> $a['price'];
         case 'popular':
-            return $b['featured'] <=> $a['featured'];
+            $a_featured = $a['featured'] ?? 0;
+            $b_featured = $b['featured'] ?? 0;
+            return $b_featured <=> $a_featured;
         case 'newest':
         default:
-            return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+            $a_date = isset($a['created_at']) ? strtotime($a['created_at']) : time();
+            $b_date = isset($b['created_at']) ? strtotime($b['created_at']) : time();
+            return $b_date <=> $a_date;
     }
 });
 
-// Pagination
 $total_products = count($filtered_products);
 $total_pages = ceil($total_products / $items_per_page);
-
-// Slice the array for pagination
+    
 $products = array_slice($filtered_products, $offset, $items_per_page);
 ?>
 
@@ -453,14 +416,105 @@ $products = array_slice($filtered_products, $offset, $items_per_page);
 </section>
 
 <script>
-    // Quick view functionality (modal would be implemented in a real application)
     function quickView(productId) {
-        window.location.href = '<?php echo SITE_URL; ?>/pages/product.php?id=' + productId;
+        const modal = document.getElementById('quick-view-modal');
+        const modalContent = document.getElementById('quick-view-content');
+        const loadingSpinner = document.getElementById('quick-view-loading');
+        
+        modal.classList.remove('hidden');
+        loadingSpinner.classList.remove('hidden');
+        modalContent.classList.add('hidden');
+        
+        <?php foreach ($all_products as $product): ?>
+        if (productId === <?php echo $product['id']; ?>) {
+            loadingSpinner.classList.add('hidden');
+            modalContent.classList.remove('hidden');
+            
+            const productHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img src="<?php echo $product['image']; ?>" 
+                            alt="<?php echo $product['name']; ?>" 
+                            class="w-full h-auto object-cover rounded-lg">
+                        <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                            Sale
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Product Details -->
+                    <div class="product-details">
+                        <span class="text-sm text-green-600">
+                            <?php echo $product['category_name']; ?>
+                        </span>
+                        <h2 class="text-2xl font-bold mb-2"><?php echo $product['name']; ?></h2>
+                        
+                        <div class="price-wrapper mb-4">
+                            <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
+                            <span class="text-2xl font-bold text-green-600">$<?php echo number_format($product['sale_price'], 2); ?></span>
+                            <span class="text-lg text-gray-500 line-through ml-2">$<?php echo number_format($product['price'], 2); ?></span>
+                            <?php else: ?>
+                            <span class="text-2xl font-bold text-green-600">$<?php echo number_format($product['price'], 2); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="stock mb-4">
+                            <?php if ($product['stock'] > 0): ?>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                                In Stock (<?php echo $product['stock']; ?> available)
+                            </span>
+                            <?php else: ?>
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+                                Out of Stock
+                            </span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="description mb-6">
+                            <p class="text-gray-700"><?php echo $product['description']; ?></p>
+                        </div>
+                        
+                        <?php if ($product['stock'] > 0): ?>
+                        <div class="actions flex gap-4 mb-6">
+                            <button onclick="addToCart(<?php echo $product['id']; ?>)" 
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition-colors flex items-center justify-center">
+                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                            </button>
+                            <button onclick="addToWishlist(<?php echo $product['id']; ?>)" 
+                                    class="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 py-3 px-6 rounded-md transition-colors flex items-center justify-center">
+                                <i class="far fa-heart mr-2"></i>
+            </button>
+        </div>
+                        <?php else: ?>
+                        <div class="mb-6">
+                            <button class="w-full bg-gray-300 text-gray-600 cursor-not-allowed py-3 px-6 rounded-md flex items-center justify-center">
+                                <i class="fas fa-ban mr-2"></i> Out of Stock
+                            </button>
+            </div>
+                        <?php endif; ?>
+                        
+                        <a href="<?php echo SITE_URL; ?>/pages/product.php?slug=<?php echo $product['slug']; ?>" 
+                           class="text-green-600 hover:text-green-800 flex items-center">
+                            <span>View Full Details</span>
+                            <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                        </a>
+        </div>
+    </div>
+            `;
+            
+            modalContent.innerHTML = productHTML;
+        return;
+        }
+        <?php endforeach; ?>
+        
+        loadingSpinner.classList.add('hidden');
+        modalContent.classList.remove('hidden');
+        modalContent.innerHTML = '<p class="text-center text-red-600">Product not found</p>';
     }
     
-    // Add to wishlist functionality
     function addToWishlist(productId) {
-        // AJAX request to add item to wishlist
         fetch('<?php echo SITE_URL; ?>/includes/ajax/add_to_wishlist.php', {
             method: 'POST',
             headers: {
@@ -471,16 +525,13 @@ $products = array_slice($filtered_products, $offset, $items_per_page);
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update wishlist count in the navbar
                 const wishlistCountElement = document.getElementById('wishlist-count');
                 if (wishlistCountElement) {
                     wishlistCountElement.textContent = data.wishlist_count;
                 }
                 
-                // Show success message
                 alert(data.message || 'Product added to wishlist successfully');
             } else {
-                // Show error message
                 alert(data.message || 'Failed to add product to wishlist');
             }
         })
@@ -490,12 +541,9 @@ $products = array_slice($filtered_products, $offset, $items_per_page);
         });
     }
     
-    // Add to cart functionality
     function addToCart(productId) {
-        // Default quantity 1 for shop page quick add
         const quantity = 1;
         
-        // AJAX request to add item to cart
         fetch('<?php echo SITE_URL; ?>/includes/ajax/add_to_cart.php', {
             method: 'POST',
             headers: {
@@ -506,16 +554,13 @@ $products = array_slice($filtered_products, $offset, $items_per_page);
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update cart count in the navbar
                 const cartCountElement = document.getElementById('cart-count');
                 if (cartCountElement) {
                     cartCountElement.textContent = data.cart_count;
                 }
                 
-                // Show success message
                 alert(data.message || 'Product added to cart successfully');
             } else {
-                // Show error message
                 alert(data.message || 'Failed to add product to cart');
             }
         })
@@ -524,6 +569,48 @@ $products = array_slice($filtered_products, $offset, $items_per_page);
             alert('An error occurred while adding the product to cart');
         });
     }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeModal = document.getElementById('close-quick-view');
+        const modal = document.getElementById('quick-view-modal');
+        
+        closeModal.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
 </script>
+
+<!-- Quick View Modal -->
+<div id="quick-view-modal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 class="text-xl font-bold">Quick View</h3>
+            <button id="close-quick-view" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Loading Spinner -->
+        <div id="quick-view-loading" class="py-12 flex justify-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        </div>
+        
+        <!-- Modal Content (will be populated by JS) -->
+        <div id="quick-view-content" class="p-6 hidden"></div>
+    </div>
+</div>
 
 <?php include_once '../includes/footer.php'; ?> 

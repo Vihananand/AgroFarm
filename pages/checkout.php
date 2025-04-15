@@ -1,161 +1,242 @@
 <?php
 $page_title = "Checkout";
-$page_description = "Complete your purchase at AgroFarm.";
+$page_description = "Complete your purchase from AgroFarm.";
 
 include_once '../includes/config.php';
 include_once '../includes/header.php';
 include_once '../includes/navbar.php';
 
-// Check if user is logged in
-if (!isLoggedIn()) {
-    // Save current URL to redirect back after login
-    $redirect_url = SITE_URL . '/pages/checkout.php';
-    redirect(SITE_URL . '/pages/login.php?redirect=' . urlencode($redirect_url));
+// Initialize cart in session if it doesn't exist
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
 }
 
-// Get cart items and verify there are items to checkout
-try {
-    $stmt = $conn->prepare("
-        SELECT c.id as cart_id, c.quantity, p.*, c.quantity * COALESCE(p.sale_price, p.price) as item_total 
-        FROM cart c
-        JOIN products p ON c.product_id = p.id
-        WHERE c.user_id = ?
-        ORDER BY c.created_at DESC
-    ");
-    $stmt->execute([getUserId()]);
-    $cart_items = $stmt->fetchAll();
-    
-    // If cart is empty, redirect to cart page
-    if (empty($cart_items)) {
-        setFlashMessage('error', 'Your cart is empty. Please add items before checkout.');
-        redirect(SITE_URL . '/pages/cart.php');
-    }
-    
-    // Calculate cart totals
-    $subtotal = 0;
-    $total_items = 0;
-    
-    foreach ($cart_items as $item) {
-        $subtotal += $item['item_total'];
-        $total_items += $item['quantity'];
-    }
-    
-    // Calculate shipping cost (simplified for example)
-    $shipping_cost = $subtotal > 100 ? 0 : 15;
-    
-    // Calculate tax (simplified for example)
-    $tax_rate = 0.08; // 8%
-    $tax = $subtotal * $tax_rate;
-    
-    // Calculate total
-    $total = $subtotal + $shipping_cost + $tax;
-    
-} catch (PDOException $e) {
-    setFlashMessage('error', 'Failed to retrieve cart items.');
+// Redirect to cart if cart is empty
+if (empty($_SESSION['cart'])) {
+    setFlashMessage('error', 'Your cart is empty. Please add products to your cart before checkout.');
     redirect(SITE_URL . '/pages/cart.php');
 }
 
-// Get user information
-try {
-    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([getUserId()]);
-    $user = $stmt->fetch();
-} catch (PDOException $e) {
-    $user = [];
+// Sample products (same as in shop.php)
+$all_products = [
+    [
+        'id' => 1,
+        'name' => 'Organic Fertilizer',
+        'slug' => 'organic-fertilizer',
+        'description' => 'Premium organic fertilizer for all types of plants',
+        'image' => 'https://picsum.photos/id/134/600/400',
+        'price' => 29.99,
+        'sale_price' => 24.99,
+        'stock' => 15,
+        'category_id' => 2,
+        'category_name' => 'Fertilizers',
+        'category_slug' => 'fertilizers',
+        'featured' => 1,
+        'created_at' => '2023-06-15'
+    ],
+    [
+        'id' => 2,
+        'name' => 'Premium Garden Hoe',
+        'slug' => 'premium-garden-hoe',
+        'description' => 'Durable garden hoe with comfortable grip',
+        'image' => 'https://picsum.photos/id/150/600/400',
+        'price' => 49.99,
+        'sale_price' => null,
+        'stock' => 8,
+        'category_id' => 3,
+        'category_name' => 'Equipment',
+        'category_slug' => 'equipment',
+        'featured' => 0,
+        'created_at' => '2023-07-20'
+    ],
+    [
+        'id' => 3,
+        'name' => 'Organic Tomato Seeds',
+        'slug' => 'organic-tomato-seeds',
+        'description' => 'Heirloom tomato seeds for your garden',
+        'image' => 'https://picsum.photos/id/145/600/400',
+        'price' => 5.99,
+        'sale_price' => 4.99,
+        'stock' => 50,
+        'category_id' => 5,
+        'category_name' => 'Seeds',
+        'category_slug' => 'seeds',
+        'featured' => 1,
+        'created_at' => '2023-08-05'
+    ],
+    [
+        'id' => 4,
+        'name' => 'Mini Tractor',
+        'slug' => 'mini-tractor',
+        'description' => 'Compact tractor for small farms and gardens',
+        'image' => 'https://picsum.photos/id/167/600/400',
+        'price' => 2999.99,
+        'sale_price' => 2799.99,
+        'stock' => 0,
+        'category_id' => 1,
+        'category_name' => 'Farm Machinery',
+        'category_slug' => 'machinery',
+        'featured' => 1,
+        'created_at' => '2023-05-10'
+    ],
+    [
+        'id' => 5,
+        'name' => 'Fresh Apples (5kg)',
+        'slug' => 'fresh-apples',
+        'description' => 'Organic farm-fresh apples',
+        'image' => 'https://picsum.photos/id/102/600/400',
+        'price' => 12.99,
+        'sale_price' => null,
+        'stock' => 20,
+        'category_id' => 4,
+        'category_name' => 'Fresh Produce',
+        'category_slug' => 'produce',
+        'featured' => 0,
+        'created_at' => '2023-09-01'
+    ],
+    [
+        'id' => 6,
+        'name' => 'Gardening Gloves',
+        'slug' => 'gardening-gloves',
+        'description' => 'Durable and comfortable gardening gloves',
+        'image' => 'https://picsum.photos/id/160/600/400',
+        'price' => 15.99,
+        'sale_price' => 12.99,
+        'stock' => 30,
+        'category_id' => 3,
+        'category_name' => 'Equipment',
+        'category_slug' => 'equipment',
+        'featured' => 0,
+        'created_at' => '2023-06-25'
+    ],
+    [
+        'id' => 7,
+        'name' => 'Carrot Seeds',
+        'slug' => 'carrot-seeds',
+        'description' => 'Premium carrot seeds for your vegetable garden',
+        'image' => 'https://picsum.photos/id/292/600/400',
+        'price' => 3.99,
+        'sale_price' => null,
+        'stock' => 45,
+        'category_id' => 5,
+        'category_name' => 'Seeds',
+        'category_slug' => 'seeds',
+        'featured' => 0,
+        'created_at' => '2023-07-10'
+    ],
+    [
+        'id' => 8,
+        'name' => 'Irrigation System',
+        'slug' => 'irrigation-system',
+        'description' => 'Automated drip irrigation system for efficient watering',
+        'image' => 'https://picsum.photos/id/117/600/400',
+        'price' => 199.99,
+        'sale_price' => 179.99,
+        'stock' => 10,
+        'category_id' => 3,
+        'category_name' => 'Equipment',
+        'category_slug' => 'equipment',
+        'featured' => 1,
+        'created_at' => '2023-05-20'
+    ],
+    [
+        'id' => 9,
+        'name' => 'Potato Harvester',
+        'slug' => 'potato-harvester',
+        'description' => 'Efficient potato harvesting machine for medium-sized farms',
+        'image' => 'https://picsum.photos/id/239/600/400',
+        'price' => 1499.99,
+        'sale_price' => null,
+        'stock' => 5,
+        'category_id' => 1,
+        'category_name' => 'Farm Machinery',
+        'category_slug' => 'machinery',
+        'featured' => 0,
+        'created_at' => '2023-08-10'
+    ],
+    [
+        'id' => 10,
+        'name' => 'Organic Strawberries (1kg)',
+        'slug' => 'organic-strawberries',
+        'description' => 'Sweet and juicy organic strawberries',
+        'image' => 'https://picsum.photos/id/1080/600/400',
+        'price' => 8.99,
+        'sale_price' => 7.99,
+        'stock' => 15,
+        'category_id' => 4,
+        'category_name' => 'Fresh Produce',
+        'category_slug' => 'produce',
+        'featured' => 1,
+        'created_at' => '2023-09-05'
+    ]
+];
+
+// Convert products array to associative array by ID for easy lookup
+$products_by_id = [];
+foreach ($all_products as $product) {
+    $products_by_id[$product['id']] = $product;
 }
 
-// Process checkout form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $shipping_first_name = $_POST['shipping_first_name'] ?? '';
-    $shipping_last_name = $_POST['shipping_last_name'] ?? '';
-    $shipping_email = $_POST['shipping_email'] ?? '';
-    $shipping_phone = $_POST['shipping_phone'] ?? '';
-    $shipping_address = $_POST['shipping_address'] ?? '';
-    $shipping_city = $_POST['shipping_city'] ?? '';
-    $shipping_state = $_POST['shipping_state'] ?? '';
-    $shipping_zip = $_POST['shipping_zip'] ?? '';
-    $shipping_country = $_POST['shipping_country'] ?? '';
-    $payment_method = $_POST['payment_method'] ?? '';
-    
-    // Basic validation
-    $errors = [];
-    
-    if (empty($shipping_first_name)) $errors[] = 'First name is required.';
-    if (empty($shipping_last_name)) $errors[] = 'Last name is required.';
-    if (empty($shipping_email)) $errors[] = 'Email is required.';
-    if (empty($shipping_phone)) $errors[] = 'Phone number is required.';
-    if (empty($shipping_address)) $errors[] = 'Address is required.';
-    if (empty($shipping_city)) $errors[] = 'City is required.';
-    if (empty($shipping_state)) $errors[] = 'State is required.';
-    if (empty($shipping_zip)) $errors[] = 'ZIP code is required.';
-    if (empty($shipping_country)) $errors[] = 'Country is required.';
-    if (empty($payment_method)) $errors[] = 'Payment method is required.';
-    
-    // If no errors, process the order
-    if (empty($errors)) {
-        try {
-            // Format full shipping address
-            $full_shipping_address = $shipping_address . ', ' . $shipping_city . ', ' . $shipping_state . ' ' . $shipping_zip . ', ' . $shipping_country;
-            
-            // Begin transaction
-            $conn->beginTransaction();
-            
-            // Create order
-            $stmt = $conn->prepare("
-                INSERT INTO orders (
-                    user_id, total_amount, shipping_address, shipping_phone, shipping_email,
-                    status, payment_method, payment_status
-                ) VALUES (?, ?, ?, ?, ?, 'pending', ?, 'pending')
-            ");
-            
-            $stmt->execute([
-                getUserId(),
-                $total,
-                $full_shipping_address,
-                $shipping_phone,
-                $shipping_email,
-                $payment_method
-            ]);
-            
-            $order_id = $conn->lastInsertId();
-            
-            // Add order items
-            $stmt = $conn->prepare("
-                INSERT INTO order_items (order_id, product_id, quantity, price)
-                VALUES (?, ?, ?, ?)
-            ");
-            
-            foreach ($cart_items as $item) {
-                $item_price = $item['sale_price'] ?? $item['price'];
-                $stmt->execute([
-                    $order_id,
-                    $item['id'],
-                    $item['quantity'],
-                    $item_price
-                ]);
-                
-                // Update product stock
-                $new_stock = $item['stock'] - $item['quantity'];
-                $update_stock = $conn->prepare("UPDATE products SET stock = ? WHERE id = ?");
-                $update_stock->execute([$new_stock, $item['id']]);
-            }
-            
-            // Clear the user's cart
-            $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
-            $stmt->execute([getUserId()]);
-            
-            // Commit transaction
-            $conn->commit();
-            
-            // Redirect to order confirmation page
-            redirect(SITE_URL . '/pages/order-confirmation.php?order_id=' . $order_id);
-            
-        } catch (PDOException $e) {
-            // Rollback transaction on error
-            $conn->rollBack();
-            $errors[] = 'An error occurred while processing your order. Please try again.';
-        }
+// Prepare cart items with product data
+$cart_items = [];
+$subtotal = 0;
+$total_items = 0;
+
+foreach ($_SESSION['cart'] as $product_id => $quantity) {
+    if (isset($products_by_id[$product_id])) {
+        $product = $products_by_id[$product_id];
+        $price = $product['sale_price'] ?? $product['price'];
+        $item_total = $price * $quantity;
+        
+        $cart_items[] = [
+            'product_id' => $product_id,
+            'quantity' => $quantity,
+            'name' => $product['name'],
+            'slug' => $product['slug'],
+            'image' => $product['image'],
+            'price' => $product['price'],
+            'sale_price' => $product['sale_price'],
+            'item_total' => $item_total
+        ];
+        
+        $subtotal += $item_total;
+        $total_items += $quantity;
     }
+}
+
+// Calculate shipping cost (simplified for example)
+$shipping_cost = $subtotal > 100 ? 0 : 15;
+
+// Calculate tax (simplified for example)
+$tax_rate = 0.08; // 8%
+$tax = $subtotal * $tax_rate;
+
+// Calculate total
+$total = $subtotal + $shipping_cost + $tax;
+
+// Handle form submission for checkout
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate form data here if needed
+    
+    // Clear cart
+    $_SESSION['cart'] = [];
+    
+    // Store order in session for the confirmation page
+    $_SESSION['order'] = [
+        'order_id' => 'ORD-' . time(),
+        'items' => $cart_items,
+        'subtotal' => $subtotal,
+        'shipping' => $shipping_cost,
+        'tax' => $tax,
+        'total' => $total,
+        'shipping_address' => $_POST['address'] . ', ' . $_POST['city'] . ', ' . $_POST['state'] . ' ' . $_POST['zip'],
+        'shipping_name' => $_POST['first_name'] . ' ' . $_POST['last_name'],
+        'payment_method' => $_POST['payment_method'],
+        'date' => date('Y-m-d H:i:s')
+    ];
+    
+    // Redirect to order confirmation page
+    redirect(SITE_URL . '/pages/order-confirmation.php');
 }
 ?>
 
@@ -165,225 +246,200 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 class="text-3xl font-bold mb-8">Checkout</h1>
         
         <div class="grid lg:grid-cols-3 gap-8">
-            <!-- Checkout Form -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="p-4 border-b">
-                        <h2 class="text-xl font-semibold">Shipping Information</h2>
+                <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" class="space-y-8">
+                    <!-- Customer Information -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold mb-4">Customer Information</h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" id="first_name" name="first_name" class="form-input" required>
+                            </div>
+                            <div>
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" id="last_name" name="last_name" class="form-input" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" required>
+                        </div>
                     </div>
                     
-                    <div class="p-6">
-                        <?php if (!empty($errors)): ?>
-                        <div class="bg-red-50 text-red-700 p-4 mb-6 rounded-md">
-                            <ul class="list-disc pl-5">
-                                <?php foreach ($errors as $error): ?>
-                                <li><?php echo $error; ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                        <?php endif; ?>
+                    <!-- Shipping Information -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold mb-4">Shipping Address</h2>
                         
-                        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" id="checkout-form">
-                            <div class="grid md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                                <div>
-                                    <label for="shipping_first_name" class="block text-gray-700 mb-1">First Name <span class="text-red-600">*</span></label>
-                                    <input type="text" id="shipping_first_name" name="shipping_first_name" class="form-input w-full" value="<?php echo $user['first_name'] ?? ''; ?>" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="shipping_last_name" class="block text-gray-700 mb-1">Last Name <span class="text-red-600">*</span></label>
-                                    <input type="text" id="shipping_last_name" name="shipping_last_name" class="form-input w-full" value="<?php echo $user['last_name'] ?? ''; ?>" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="shipping_email" class="block text-gray-700 mb-1">Email <span class="text-red-600">*</span></label>
-                                    <input type="email" id="shipping_email" name="shipping_email" class="form-input w-full" value="<?php echo $user['email'] ?? ''; ?>" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="shipping_phone" class="block text-gray-700 mb-1">Phone <span class="text-red-600">*</span></label>
-                                    <input type="tel" id="shipping_phone" name="shipping_phone" class="form-input w-full" value="<?php echo $user['phone'] ?? ''; ?>" required>
-                                </div>
+                        <div class="mt-4">
+                            <label for="address" class="form-label">Street Address *</label>
+                            <input type="text" id="address" name="address" class="form-input" required>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label for="city" class="form-label">City *</label>
+                                <input type="text" id="city" name="city" class="form-input" required>
                             </div>
-                            
-                            <div class="mb-6">
-                                <label for="shipping_address" class="block text-gray-700 mb-1">Address <span class="text-red-600">*</span></label>
-                                <input type="text" id="shipping_address" name="shipping_address" class="form-input w-full" value="<?php echo $user['address'] ?? ''; ?>" required>
+                            <div>
+                                <label for="state" class="form-label">State/Province *</label>
+                                <input type="text" id="state" name="state" class="form-input" required>
                             </div>
-                            
-                            <div class="grid md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                                <div>
-                                    <label for="shipping_city" class="block text-gray-700 mb-1">City <span class="text-red-600">*</span></label>
-                                    <input type="text" id="shipping_city" name="shipping_city" class="form-input w-full" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="shipping_state" class="block text-gray-700 mb-1">State <span class="text-red-600">*</span></label>
-                                    <input type="text" id="shipping_state" name="shipping_state" class="form-input w-full" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="shipping_zip" class="block text-gray-700 mb-1">ZIP Code <span class="text-red-600">*</span></label>
-                                    <input type="text" id="shipping_zip" name="shipping_zip" class="form-input w-full" required>
-                                </div>
-                                
-                                <div>
-                                    <label for="shipping_country" class="block text-gray-700 mb-1">Country <span class="text-red-600">*</span></label>
-                                    <select id="shipping_country" name="shipping_country" class="form-select w-full" required>
-                                        <option value="">Select Country</option>
-                                        <option value="United States">United States</option>
-                                        <option value="Canada">Canada</option>
-                                        <option value="United Kingdom">United Kingdom</option>
-                                        <option value="Australia">Australia</option>
-                                        <option value="Germany">Germany</option>
-                                        <option value="France">France</option>
-                                        <option value="Italy">Italy</option>
-                                        <option value="Spain">Spain</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label for="zip" class="form-label">Zip/Postal Code *</label>
+                                <input type="text" id="zip" name="zip" class="form-input" required>
                             </div>
-                            
-                            <div class="border-t pt-6 mt-8">
-                                <h3 class="text-lg font-semibold mb-4">Payment Method</h3>
-                                
-                                <div class="space-y-4">
-                                    <div class="flex items-center">
-                                        <input type="radio" id="payment_credit_card" name="payment_method" value="credit_card" class="h-4 w-4 text-green-600" checked>
-                                        <label for="payment_credit_card" class="ml-2">
-                                            <span class="font-medium">Credit Card</span>
-                                            <div class="flex items-center mt-1">
-                                                <i class="fab fa-cc-visa text-blue-600 text-2xl mr-2"></i>
-                                                <i class="fab fa-cc-mastercard text-red-500 text-2xl mr-2"></i>
-                                                <i class="fab fa-cc-amex text-blue-500 text-2xl mr-2"></i>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="payment_paypal" name="payment_method" value="paypal" class="h-4 w-4 text-green-600">
-                                        <label for="payment_paypal" class="ml-2">
-                                            <span class="font-medium">PayPal</span>
-                                            <div class="mt-1">
-                                                <i class="fab fa-paypal text-blue-700 text-2xl"></i>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="payment_bank_transfer" name="payment_method" value="bank_transfer" class="h-4 w-4 text-green-600">
-                                        <label for="payment_bank_transfer" class="ml-2">
-                                            <span class="font-medium">Bank Transfer</span>
-                                            <p class="text-sm text-gray-500 mt-1">
-                                                Make your payment directly into our bank account.
-                                            </p>
-                                        </label>
-                                    </div>
-                                </div>
+                            <div>
+                                <label for="country" class="form-label">Country *</label>
+                                <select id="country" name="country" class="form-input" required>
+                                    <option value="USA">United States</option>
+                                    <option value="CAN">Canada</option>
+                                    <option value="MEX">Mexico</option>
+                                    <option value="GBR">United Kingdom</option>
+                                </select>
                             </div>
-                            
-                            <!-- Credit Card Payment Fields (show/hide based on selection) -->
-                            <div id="credit-card-fields" class="mt-6 border-t pt-6">
-                                <div class="grid md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
-                                    <div class="md:col-span-2">
-                                        <label for="card_number" class="block text-gray-700 mb-1">Card Number</label>
-                                        <input type="text" id="card_number" class="form-input w-full" placeholder="XXXX XXXX XXXX XXXX">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="expiry_date" class="block text-gray-700 mb-1">Expiry Date</label>
-                                        <input type="text" id="expiry_date" class="form-input w-full" placeholder="MM/YY">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="cvv" class="block text-gray-700 mb-1">CVV</label>
-                                        <input type="text" id="cvv" class="form-input w-full" placeholder="XXX">
-                                    </div>
-                                    
-                                    <div class="md:col-span-2">
-                                        <label for="name_on_card" class="block text-gray-700 mb-1">Name on Card</label>
-                                        <input type="text" id="name_on_card" class="form-input w-full">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-8">
-                                <button type="submit" class="btn-primary w-full py-3 text-lg">
-                                    Complete Order
-                                </button>
-                                
-                                <p class="text-center mt-4 text-sm text-gray-500">
-                                    By placing your order, you agree to our <a href="#" class="text-green-600 hover:underline">Terms of Service</a> and <a href="#" class="text-green-600 hover:underline">Privacy Policy</a>.
-                                </p>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                    
+                    <!-- Payment Information -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <input type="radio" id="payment_credit" name="payment_method" value="credit_card" class="mr-2" checked>
+                                <label for="payment_credit">Credit Card</label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="radio" id="payment_paypal" name="payment_method" value="paypal" class="mr-2">
+                                <label for="payment_paypal">PayPal</label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="radio" id="payment_bank" name="payment_method" value="bank_transfer" class="mr-2">
+                                <label for="payment_bank">Bank Transfer</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Credit Card Details (shown/hidden based on selected payment method) -->
+                        <div id="credit_card_details" class="mt-4 p-4 border border-gray-200 rounded-md">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="card_number" class="form-label">Card Number</label>
+                                    <input type="text" id="card_number" name="card_number" class="form-input" placeholder="**** **** **** ****">
+                                </div>
+                                <div>
+                                    <label for="card_name" class="form-label">Name on Card</label>
+                                    <input type="text" id="card_name" name="card_name" class="form-input">
+                                </div>
+                            </div>
+                            
+                            <div class="grid md:grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <label for="expiry_date" class="form-label">Expiration Date</label>
+                                    <input type="text" id="expiry_date" name="expiry_date" class="form-input" placeholder="MM/YY">
+                                </div>
+                                <div>
+                                    <label for="cvv" class="form-label">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" class="form-input" placeholder="***">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Notes -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold mb-4">Additional Information</h2>
+                        
+                        <div>
+                            <label for="order_notes" class="form-label">Order Notes (Optional)</label>
+                            <textarea id="order_notes" name="order_notes" rows="3" class="form-input" placeholder="Special instructions for delivery or order"></textarea>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full text-center py-3">
+                        Place Order
+                    </button>
+                </form>
             </div>
             
             <!-- Order Summary -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden sticky top-8">
-                    <div class="p-4 border-b">
-                        <h2 class="text-xl font-semibold">Order Summary</h2>
+                <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+                    <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                    
+                    <div class="max-h-64 overflow-y-auto mb-4">
+                        <?php foreach ($cart_items as $item): ?>
+                        <div class="flex py-3 border-b">
+                            <div class="w-16 h-16 flex-shrink-0">
+                                <img src="<?php echo $item['image']; ?>" alt="<?php echo $item['name']; ?>" class="w-full h-full object-cover rounded">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <h3 class="text-sm font-medium"><?php echo $item['name']; ?></h3>
+                                <p class="text-xs text-gray-500">Qty: <?php echo $item['quantity']; ?></p>
+                                <p class="text-sm font-medium mt-1">
+                                    <?php echo '$' . number_format($item['item_total'], 2); ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
                     </div>
                     
-                    <div class="p-4">
-                        <div class="max-h-64 overflow-y-auto mb-4">
-                            <?php foreach ($cart_items as $item): ?>
-                            <div class="flex items-start pb-3 mb-3 border-b last:border-b-0 last:mb-0 last:pb-0">
-                                <div class="w-16 h-16 flex-shrink-0 mr-3">
-                                    <img src="<?php echo SITE_URL; ?>/assets/images/products/<?php echo $item['image'] ?? 'placeholder.jpg'; ?>" 
-                                         alt="<?php echo $item['name']; ?>" 
-                                         class="w-full h-full object-cover rounded">
-                                </div>
-                                <div class="flex-grow">
-                                    <h4 class="text-sm font-medium"><?php echo $item['name']; ?></h4>
-                                    <div class="flex justify-between mt-1">
-                                        <p class="text-xs text-gray-500">Qty: <?php echo $item['quantity']; ?></p>
-                                        <p class="text-sm font-medium">
-                                            <?php echo '$' . number_format($item['item_total'], 2); ?>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
+                    <div class="space-y-2 border-t pt-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span><?php echo '$' . number_format($subtotal, 2); ?></span>
                         </div>
                         
-                        <div class="space-y-3 pt-3 border-t text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Subtotal</span>
-                                <span><?php echo '$' . number_format($subtotal, 2); ?></span>
-                            </div>
-                            
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Shipping</span>
-                                <?php if ($shipping_cost > 0): ?>
-                                <span><?php echo '$' . number_format($shipping_cost, 2); ?></span>
-                                <?php else: ?>
-                                <span class="text-green-600">Free</span>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Tax</span>
-                                <span><?php echo '$' . number_format($tax, 2); ?></span>
-                            </div>
-                            
-                            <div class="flex justify-between pt-3 border-t text-base font-bold">
-                                <span>Total</span>
-                                <span><?php echo '$' . number_format($total, 2); ?></span>
-                            </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Shipping</span>
+                            <?php if ($shipping_cost > 0): ?>
+                            <span><?php echo '$' . number_format($shipping_cost, 2); ?></span>
+                            <?php else: ?>
+                            <span class="text-green-600">Free</span>
+                            <?php endif; ?>
                         </div>
                         
-                        <?php if ($shipping_cost === 0): ?>
-                        <div class="mt-4 bg-green-50 text-green-700 px-4 py-2 rounded-md text-sm">
-                            <i class="fas fa-check-circle mr-1"></i> Free shipping applied
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tax (8%)</span>
+                            <span><?php echo '$' . number_format($tax, 2); ?></span>
                         </div>
-                        <?php endif; ?>
                         
-                        <div class="mt-4 text-center text-sm text-gray-500">
-                            <p>Need help? <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="text-green-600 hover:underline">Contact us</a></p>
+                        <div class="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
+                            <span>Total</span>
+                            <span class="text-green-600"><?php echo '$' . number_format($total, 2); ?></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-lock text-green-600 mr-2"></i>
+                            <span class="text-sm">Secure Payment</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <div class="p-1 border rounded">
+                                <i class="fab fa-cc-visa text-blue-700 text-2xl"></i>
+                            </div>
+                            <div class="p-1 border rounded">
+                                <i class="fab fa-cc-mastercard text-red-600 text-2xl"></i>
+                            </div>
+                            <div class="p-1 border rounded">
+                                <i class="fab fa-cc-paypal text-blue-500 text-2xl"></i>
+                            </div>
+                            <div class="p-1 border rounded">
+                                <i class="fab fa-cc-amex text-blue-400 text-2xl"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -393,28 +449,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </section>
 
 <script>
-    // Show/hide payment method fields
+    // Payment method toggle
     document.addEventListener('DOMContentLoaded', function() {
-        const creditCardRadio = document.getElementById('payment_credit_card');
-        const paypalRadio = document.getElementById('payment_paypal');
-        const bankTransferRadio = document.getElementById('payment_bank_transfer');
-        const creditCardFields = document.getElementById('credit-card-fields');
+        const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+        const creditCardDetails = document.getElementById('credit_card_details');
         
-        function updatePaymentFields() {
-            if (creditCardRadio.checked) {
-                creditCardFields.style.display = 'block';
-            } else {
-                creditCardFields.style.display = 'none';
-            }
-        }
-        
-        // Set initial state
-        updatePaymentFields();
-        
-        // Add event listeners
-        creditCardRadio.addEventListener('change', updatePaymentFields);
-        paypalRadio.addEventListener('change', updatePaymentFields);
-        bankTransferRadio.addEventListener('change', updatePaymentFields);
+        paymentMethods.forEach(method => {
+            method.addEventListener('change', function() {
+                if (this.value === 'credit_card') {
+                    creditCardDetails.style.display = 'block';
+                } else {
+                    creditCardDetails.style.display = 'none';
+                }
+            });
+        });
     });
 </script>
 

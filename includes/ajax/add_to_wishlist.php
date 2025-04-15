@@ -1,103 +1,103 @@
 <?php
-/**
- * Ajax handler for adding items to wishlist
- */
-
-// Include configuration file
 require_once '../config.php';
 
-// Set the response header to JSON
 header('Content-Type: application/json');
 
-// Initialize the response array
 $response = [
     'success' => false,
     'message' => 'An error occurred.',
     'wishlist_count' => 0
 ];
 
-// Check if the user is logged in
-if (!isLoggedIn()) {
-    $response['message'] = 'You must be logged in to add items to wishlist.';
-    echo json_encode($response);
-    exit;
-}
-
-// Check if the request is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method.';
     echo json_encode($response);
     exit;
 }
 
-// Check if product_id is provided
 if (!isset($_POST['product_id'])) {
     $response['message'] = 'Missing required parameter: product_id.';
     echo json_encode($response);
     exit;
 }
 
-// Get and validate product ID
 $product_id = (int)$_POST['product_id'];
 
-// Validate product ID
 if ($product_id <= 0) {
     $response['message'] = 'Invalid product ID.';
     echo json_encode($response);
     exit;
 }
 
-// Get user ID
-$user_id = getUserId();
-
 try {
-    // Check if the database is connected
-    if (!$db_connected) {
-        throw new Exception('Database connection failed.');
-    }
+    $all_products = [
+        1 => [
+            'id' => 1,
+            'name' => 'Organic Fertilizer',
+        ],
+        2 => [
+            'id' => 2,
+            'name' => 'Premium Garden Hoe',
+        ],
+        3 => [
+            'id' => 3,
+            'name' => 'Organic Tomato Seeds',
+        ],
+        4 => [
+            'id' => 4,
+            'name' => 'Mini Tractor',
+        ],
+        5 => [
+            'id' => 5,
+            'name' => 'Fresh Apples (5kg)',
+        ],
+        6 => [
+            'id' => 6,
+            'name' => 'Gardening Gloves',
+        ],
+        7 => [
+            'id' => 7,
+            'name' => 'Carrot Seeds',
+        ],
+        8 => [
+            'id' => 8,
+            'name' => 'Irrigation System',
+        ],
+        9 => [
+            'id' => 9,
+            'name' => 'Potato Harvester',
+        ],
+        10 => [
+            'id' => 10,
+            'name' => 'Organic Strawberries (1kg)',
+        ]
+    ];
     
-    // Check if the product exists
-    $stmt = $conn->prepare("SELECT id, name FROM products WHERE id = ?");
-    $stmt->execute([$product_id]);
-    $product = $stmt->fetch();
-    
-    if (!$product) {
-        $response['message'] = 'Product not found or unavailable.';
+    if (!isset($all_products[$product_id])) {
+        $response['message'] = 'Product not found.';
         echo json_encode($response);
         exit;
     }
     
-    // Check if product is already in wishlist
-    $stmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?");
-    $stmt->execute([$user_id, $product_id]);
-    $exists = $stmt->fetch();
+    if (!isset($_SESSION['wishlist'])) {
+        $_SESSION['wishlist'] = [];
+    }
     
-    if ($exists) {
-        // Product already in wishlist
+    if (in_array($product_id, $_SESSION['wishlist'])) {
         $response['success'] = true;
         $response['message'] = 'Product is already in your wishlist.';
     } else {
-        // Add to wishlist
-        $stmt = $conn->prepare("INSERT INTO wishlist (user_id, product_id, created_at) VALUES (?, ?, NOW())");
-        $stmt->execute([$user_id, $product_id]);
-        
+        $_SESSION['wishlist'][] = $product_id;
         $response['success'] = true;
         $response['message'] = 'Product added to wishlist successfully.';
     }
     
-    // Get updated wishlist count
-    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $wishlist_count = $stmt->fetch();
-    
-    $response['wishlist_count'] = $wishlist_count['count'] ?? 0;
+    $response['wishlist_count'] = count($_SESSION['wishlist']);
     
 } catch (Exception $e) {
-    // Log the error but don't expose details to the client
     error_log('Wishlist error: ' . $e->getMessage());
     $response['message'] = 'A system error occurred. Please try again later.';
 }
 
-// Return the JSON response
 echo json_encode($response);
 exit; 

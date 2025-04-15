@@ -80,7 +80,6 @@ include_once 'includes/navbar.php';
         <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Featured Products</h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <?php
-            // Get featured products
             include_once 'components/featured-products.php';
             ?>
         </div>

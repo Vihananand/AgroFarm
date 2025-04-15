@@ -62,7 +62,6 @@
             @apply bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300;
         }
         
-        /* Responsive navbar styles */
         .mobile-menu {
             @apply fixed top-0 left-0 w-full h-full bg-white z-50 transform transition-transform duration-300 ease-in-out;
         }
@@ -71,7 +70,6 @@
             @apply -translate-x-full;
         }
         
-        /* Custom form styles */
         .form-input {
             @apply w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent;
         }
@@ -80,7 +78,6 @@
             @apply block text-gray-700 font-medium mb-2;
         }
         
-        /* Animation classes */
         .fade-in {
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
@@ -90,9 +87,8 @@
             opacity: 1;
         }
         
-        /* Swiper customization */
         .swiper-button-next:after, .swiper-button-prev:after {
-            display: none; /* Hide default arrows */
+            display: none; 
         }
         
         .testimonials-next, .testimonials-prev {
@@ -101,7 +97,6 @@
         }
     </style>
     
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
@@ -118,8 +113,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-<?php 
-// Flash message display
+<?php
 $flash = getFlashMessage();
 if ($flash): 
 ?>
@@ -133,7 +127,6 @@ if ($flash):
     </button>
 </div>
 <script>
-    // Auto hide flash message after 5 seconds
     setTimeout(() => {
         const flashMessage = document.getElementById('flash-message');
         if (flashMessage) {

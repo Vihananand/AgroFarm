@@ -1,132 +1,136 @@
 <?php
-/**
- * Ajax handler for adding items to cart
- */
-
-// Include configuration file
 require_once '../config.php';
 
-// Set the response header to JSON
 header('Content-Type: application/json');
 
-// Initialize the response array
 $response = [
     'success' => false,
     'message' => 'An error occurred.',
     'cart_count' => 0
 ];
 
-// Check if the user is logged in
-if (!isLoggedIn()) {
-    $response['message'] = 'You must be logged in to add items to cart.';
-    echo json_encode($response);
-    exit;
-}
-
-// Check if the request is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method.';
     echo json_encode($response);
     exit;
 }
 
-// Check if product_id and quantity are provided
 if (!isset($_POST['product_id']) || !isset($_POST['quantity'])) {
     $response['message'] = 'Missing required parameters.';
     echo json_encode($response);
     exit;
 }
 
-// Get and validate product ID and quantity
 $product_id = (int)$_POST['product_id'];
 $quantity = (int)$_POST['quantity'];
 
-// Validate product ID
 if ($product_id <= 0) {
     $response['message'] = 'Invalid product ID.';
     echo json_encode($response);
     exit;
 }
 
-// Validate quantity
 if ($quantity <= 0) {
     $response['message'] = 'Quantity must be at least 1.';
     echo json_encode($response);
     exit;
 }
 
-// Get user ID
-$user_id = getUserId();
-
 try {
-    // Check if the database is connected
-    if (!$db_connected) {
-        throw new Exception('Database connection failed.');
-    }
+    $all_products = [
+        1 => [
+            'id' => 1,
+            'name' => 'Organic Fertilizer',
+            'stock' => 15,
+        ],
+        2 => [
+            'id' => 2,
+            'name' => 'Premium Garden Hoe',
+            'stock' => 8,
+        ],
+        3 => [
+            'id' => 3,
+            'name' => 'Organic Tomato Seeds',
+            'stock' => 50,
+        ],
+        4 => [
+            'id' => 4,
+            'name' => 'Mini Tractor',
+            'stock' => 0,
+        ],
+        5 => [
+            'id' => 5,
+            'name' => 'Fresh Apples (5kg)',
+            'stock' => 20,
+        ],
+        6 => [
+            'id' => 6,
+            'name' => 'Gardening Gloves',
+            'stock' => 30,
+        ],
+        7 => [
+            'id' => 7,
+            'name' => 'Carrot Seeds',
+            'stock' => 45,
+        ],
+        8 => [
+            'id' => 8,
+            'name' => 'Irrigation System',
+            'stock' => 10,
+        ],
+        9 => [
+            'id' => 9,
+            'name' => 'Potato Harvester',
+            'stock' => 5,
+        ],
+        10 => [
+            'id' => 10,
+            'name' => 'Organic Strawberries (1kg)',
+            'stock' => 15,
+        ]
+    ];
     
-    // Check if the product exists and is in stock
-    $stmt = $conn->prepare("SELECT id, name, stock FROM products WHERE id = ?");
-    $stmt->execute([$product_id]);
-    $product = $stmt->fetch();
-    
-    if (!$product) {
-        $response['message'] = 'Product not found or unavailable.';
+    if (!isset($all_products[$product_id])) {
+        $response['message'] = 'Product not found.';
         echo json_encode($response);
         exit;
     }
     
-    // Check if product is in stock
+    $product = $all_products[$product_id];
+    
     if ($product['stock'] < $quantity) {
         $response['message'] = 'Not enough stock available. Only ' . $product['stock'] . ' items left.';
         echo json_encode($response);
         exit;
     }
     
-    // Check if the product is already in the cart
-    $stmt = $conn->prepare("SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?");
-    $stmt->execute([$user_id, $product_id]);
-    $existing_item = $stmt->fetch();
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
     
-    if ($existing_item) {
-        // Update quantity if already in cart
-        $new_quantity = $existing_item['quantity'] + $quantity;
+    if (isset($_SESSION['cart'][$product_id])) {
+        $new_quantity = $_SESSION['cart'][$product_id] + $quantity;
         
-        // Check if the new quantity exceeds the stock
         if ($new_quantity > $product['stock']) {
             $response['message'] = 'Cannot add more of this item. Stock limit reached.';
             echo json_encode($response);
             exit;
         }
         
-        $stmt = $conn->prepare("UPDATE cart SET quantity = ?, updated_at = NOW() WHERE id = ?");
-        $stmt->execute([$new_quantity, $existing_item['id']]);
-        
+        $_SESSION['cart'][$product_id] = $new_quantity;
         $response['success'] = true;
         $response['message'] = 'Cart updated successfully.';
     } else {
-        // Add new item to cart
-        $stmt = $conn->prepare("INSERT INTO cart (user_id, product_id, quantity, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())");
-        $stmt->execute([$user_id, $product_id, $quantity]);
-        
+        $_SESSION['cart'][$product_id] = $quantity;
         $response['success'] = true;
         $response['message'] = 'Item added to cart successfully.';
     }
     
-    // Get updated cart count
-    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM cart WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $cart_count = $stmt->fetch();
+    $response['cart_count'] = array_sum($_SESSION['cart']);
     
-    $response['cart_count'] = $cart_count['count'] ?? 0;
-    
-} catch (PDOException $e) {
-    // Log the error but don't expose details to the client
-    error_log('Database error: ' . $e->getMessage());
-    $response['message'] = 'A database error occurred. Please try again later.';
 } catch (Exception $e) {
     $response['message'] = $e->getMessage();
 }
 
-// Return the JSON response
 echo json_encode($response);
 exit; 

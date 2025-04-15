@@ -4,49 +4,40 @@ $page_description = "Sign in to your AgroFarm account to manage your orders, wis
 
 include_once '../includes/config.php';
 
-// Redirect if already logged in
 if (isLoggedIn()) {
     redirect(SITE_URL);
 }
 
-// Process login form
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitize($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $remember = isset($_POST['remember']);
     
-    // Validate input
     if (empty($email) || empty($password)) {
         $error = 'Please enter both email and password.';
     } else {
         try {
-            // Check if user exists
             $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch();
             
             if ($user && password_verify($password, $user['password'])) {
-                // Login successful
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['first_name'];
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_role'] = $user['role'];
                 
-                // Remember me functionality
                 if ($remember) {
                     $token = bin2hex(random_bytes(32));
                     $expires = date('Y-m-d H:i:s', strtotime('+30 days'));
                     
-                    // Save the token in the database
                     $stmt = $conn->prepare("UPDATE users SET remember_token = ?, remember_expires = ? WHERE id = ?");
                     $stmt->execute([$token, $expires, $user['id']]);
                     
-                    // Set cookie
                     setcookie('remember_token', $token, time() + (86400 * 30), '/'); // 30 days
                 }
                 
-                // Redirect to requested page or dashboard
                 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : SITE_URL;
                 redirect($redirect);
             } else {
@@ -173,7 +164,6 @@ include_once '../includes/navbar.php';
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Toggle password visibility
         const togglePassword = document.getElementById('toggle-password');
         const passwordInput = document.getElementById('password');
         
@@ -181,7 +171,6 @@ include_once '../includes/navbar.php';
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             
-            // Toggle icon
             const icon = this.querySelector('i');
             if (type === 'password') {
                 icon.classList.remove('fa-eye');

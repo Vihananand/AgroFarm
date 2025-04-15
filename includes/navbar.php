@@ -132,20 +132,18 @@
 </div>
 
 <script>
-    // Toggle search bar
     document.getElementById('search-toggle').addEventListener('click', function() {
         document.getElementById('search-bar').classList.toggle('hidden');
     });
     
-    // Mobile menu functionality
     document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
         document.getElementById('mobile-menu').classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        document.body.style.overflow = 'hidden'; 
     });
     
     document.getElementById('mobile-menu-close').addEventListener('click', function() {
         document.getElementById('mobile-menu').classList.add('hidden');
-        document.body.style.overflow = ''; // Re-enable scrolling
+        document.body.style.overflow = ''; 
     });
 </script>
 

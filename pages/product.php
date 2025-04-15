@@ -4,11 +4,9 @@ include_once '../includes/config.php';
 include_once '../includes/header.php';
 include_once '../includes/navbar.php';
 
-// In a real application, you would fetch product data from database
-// For demo purposes, we'll use sample data based on the slug parameter
 $slug = $_GET['slug'] ?? '';
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Define sample products
 $products = [
     'organic-fertilizer' => [
         'id' => 1,
@@ -32,7 +30,7 @@ $products = [
         'id' => 2,
         'name' => 'Premium Garden Hoe',
         'slug' => 'premium-garden-hoe',
-        'image' => 'https://picsum.photos/id/134/600/400',
+        'image' => 'https://picsum.photos/id/150/600/400',
         'price' => 49.99,
         'sale_price' => null,
         'stock' => 8,
@@ -83,20 +81,144 @@ $products = [
             'Weight' => '580 kg',
             'Fuel Capacity' => '20 liters'
         ]
+    ],
+    'fresh-apples' => [
+        'id' => 5,
+        'name' => 'Fresh Apples (5kg)',
+        'slug' => 'fresh-apples',
+        'image' => 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBwbGVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
+        'price' => 12.99,
+        'sale_price' => null,
+        'stock' => 20,
+        'category_name' => 'Fresh Produce',
+        'category_slug' => 'produce',
+        'description' => 'Crisp, juicy apples freshly harvested from organic orchards. These apples are perfect for eating fresh, baking, or making homemade applesauce. No pesticides or chemical fertilizers used.',
+        'specifications' => [
+            'Weight' => '5 kg',
+            'Variety' => 'Mixed (Gala, Honeycrisp, Fuji)',
+            'Growing Method' => 'Organic',
+            'Storage' => 'Keep refrigerated for maximum freshness',
+            'Origin' => 'Local orchards'
+        ]
+    ],
+    'gardening-gloves' => [
+        'id' => 6,
+        'name' => 'Gardening Gloves',
+        'slug' => 'gardening-gloves',
+        'image' => 'https://images.unsplash.com/photo-1636554613229-dfacf129c43f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Z2FyZGVuaW5nJTIwZ2xvdmVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
+        'price' => 15.99,
+        'sale_price' => 12.99,
+        'stock' => 30,
+        'category_name' => 'Equipment',
+        'category_slug' => 'equipment',
+        'description' => 'Durable and comfortable gardening gloves made from high-quality materials. These gloves provide protection while working in the garden without sacrificing dexterity or comfort.',
+        'specifications' => [
+            'Material' => 'Synthetic leather, breathable fabric',
+            'Sizes Available' => 'S, M, L, XL',
+            'Features' => 'Reinforced fingertips, adjustable wrist closure',
+            'Care Instructions' => 'Hand wash, air dry',
+            'Usage' => 'Gardening, landscaping, light farm work'
+        ]
+    ],
+    'carrot-seeds' => [
+        'id' => 7,
+        'name' => 'Carrot Seeds',
+        'slug' => 'carrot-seeds',
+        'image' => 'https://images.unsplash.com/photo-1582515073490-39981397c445?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2VlZHN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60',
+        'price' => 3.99,
+        'sale_price' => null,
+        'stock' => 45,
+        'category_name' => 'Seeds',
+        'category_slug' => 'seeds',
+        'description' => 'High-yielding carrot seeds that produce sweet, crunchy carrots. These easy-to-grow seeds are perfect for beginners and experienced gardeners alike.',
+        'specifications' => [
+            'Variety' => 'Nantes',
+            'Quantity' => '200 seeds per packet',
+            'Growing Season' => 'Spring, Fall',
+            'Days to Germination' => '7-14 days',
+            'Days to Maturity' => '65-75 days',
+            'Planting Depth' => '1/4 inch'
+        ]
+    ],
+    'irrigation-system' => [
+        'id' => 8,
+        'name' => 'Irrigation System',
+        'slug' => 'irrigation-system',
+        'image' => 'https://images.unsplash.com/photo-1599509330848-1ad10170774b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aXJyaWdhdGlvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+        'price' => 199.99,
+        'sale_price' => 179.99,
+        'stock' => 10,
+        'category_name' => 'Equipment',
+        'category_slug' => 'equipment',
+        'description' => 'Complete drip irrigation system kit that waters your garden efficiently, saving water and time. Easy to install and customize for gardens of all sizes.',
+        'specifications' => [
+            'Coverage Area' => 'Up to 50 square meters',
+            'Components' => 'Timer, pressure regulator, 50m tubing, 50 drippers, connectors',
+            'Water Saving' => 'Up to 70% compared to traditional watering',
+            'Installation' => 'No tools required',
+            'Timer Settings' => 'Adjustable frequency and duration'
+        ]
+    ],
+    'potato-harvester' => [
+        'id' => 9,
+        'name' => 'Potato Harvester',
+        'slug' => 'potato-harvester',
+        'image' => 'https://cdn.pixabay.com/photo/2021/10/17/09/18/tractor-6718387_1280.jpg',
+        'price' => 1499.99,
+        'sale_price' => null,
+        'stock' => 5,
+        'category_name' => 'Machinery',
+        'category_slug' => 'machinery',
+        'description' => 'Efficient potato harvesting machine for medium-sized farms. This harvester digs, separates, and collects potatoes with minimal damage to the crop.',
+        'specifications' => [
+            'Working Width' => '60 cm',
+            'Capacity' => 'Up to 3 tons per hour',
+            'Power Requirement' => '35-45 HP tractor',
+            'Working Depth' => 'Adjustable, up to 30 cm',
+            'Weight' => '350 kg',
+            'Features' => 'Adjustable vibrating sieve, collection basket'
+        ]
+    ],
+    'organic-strawberries' => [
+        'id' => 10,
+        'name' => 'Organic Strawberries (1kg)',
+        'slug' => 'organic-strawberries',
+        'image' => 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RyYXdiZXJyaWVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
+        'price' => 8.99,
+        'sale_price' => 7.99,
+        'stock' => 15,
+        'category_name' => 'Fresh Produce',
+        'category_slug' => 'produce',
+        'description' => 'Sweet and juicy organic strawberries freshly harvested at peak ripeness. These berries are perfect for snacking, desserts, or preserving.',
+        'specifications' => [
+            'Weight' => '1 kg',
+            'Growing Method' => 'Organic, no pesticides',
+            'Variety' => 'Mixed (predominantly Sweet Charlie)',
+            'Nutritional Benefits' => 'Rich in vitamin C, antioxidants, and fiber',
+            'Storage' => 'Refrigerate immediately, consume within 5 days',
+            'Origin' => 'Local berry farms'
+        ]
     ]
 ];
 
-// Get product data or redirect if not found
-if (isset($products[$slug])) {
+$product = null;
+
+if (!empty($slug) && isset($products[$slug])) {
     $product = $products[$slug];
-} else {
-    // Redirect to shop if product not found
-    header('Location: ' . SITE_URL . '/pages/shop.php');
-    exit();
+} elseif ($id > 0) {
+    foreach ($products as $prod) {
+        if ($prod['id'] == $id) {
+            $product = $prod;
+            break;
+        }
+    }
+}
+
+if ($product === null) {
+    redirect(SITE_URL . '/pages/shop.php');
 }
 ?>
 
-<!-- Breadcrumbs -->
 <div class="bg-gray-100 py-3">
     <div class="container mx-auto px-4">
         <div class="flex items-center text-sm">
@@ -111,17 +233,14 @@ if (isset($products[$slug])) {
     </div>
 </div>
 
-<!-- Product Details -->
 <section class="py-12">
     <div class="container mx-auto px-4">
         <div class="grid md:grid-cols-2 gap-8">
-            <!-- Product Image -->
-            <div class="product-image" data-gsap="fade-right">
+            <div class="product-image">
                 <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="w-full rounded-lg shadow-md">
             </div>
             
-            <!-- Product Info -->
-            <div class="product-info" data-gsap="fade-left">
+            <div class="product-info">
                 <h1 class="text-3xl md:text-4xl font-bold mb-2"><?php echo $product['name']; ?></h1>
                 
                 <div class="text-sm text-green-600 mb-4">
@@ -177,7 +296,6 @@ if (isset($products[$slug])) {
                 </div>
                 <?php endif; ?>
                 
-                <!-- Product Specifications -->
                 <div class="specifications">
                     <h2 class="text-xl font-semibold mb-4">Specifications</h2>
                     <div class="border rounded-lg overflow-hidden">
@@ -194,24 +312,21 @@ if (isset($products[$slug])) {
     </div>
 </section>
 
-<!-- Related Products -->
 <section class="py-12 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">You May Also Like</h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php 
-            // Get related products (excluding current product)
             $related_products = array_filter($products, function($p) use ($product) {
                 return $p['slug'] !== $product['slug'];
             });
             
-            // Display up to 4 related products
             $count = 0;
             foreach ($related_products as $related): 
                 if ($count >= 4) break;
                 $count++;
             ?>
-            <div class="product-card" data-gsap="fade-up">
+            <div class="product-card">
                 <div class="relative overflow-hidden group">
                     <img src="<?php echo $related['image']; ?>" 
                          alt="<?php echo $related['name']; ?>" 
@@ -260,22 +375,18 @@ if (isset($products[$slug])) {
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Quantity selector
         const quantityInput = document.getElementById('quantity');
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');
         
         if (quantityInput && decreaseBtn && increaseBtn) {
-            // Min and max values
             const minQty = 1;
             const maxQty = <?php echo $product['stock'] > 0 ? $product['stock'] : 1; ?>;
             
-            // Update quantity display
             function updateQuantityInput(qty) {
                 quantityInput.value = qty;
             }
             
-            // Decrease button
             decreaseBtn.addEventListener('click', function() {
                 let currentQty = parseInt(quantityInput.value);
                 if (currentQty > minQty) {
@@ -283,7 +394,6 @@ if (isset($products[$slug])) {
                 }
             });
             
-            // Increase button
             increaseBtn.addEventListener('click', function() {
                 let currentQty = parseInt(quantityInput.value);
                 if (currentQty < maxQty) {
@@ -291,7 +401,6 @@ if (isset($products[$slug])) {
                 }
             });
             
-            // Manual input validation
             quantityInput.addEventListener('change', function() {
                 let qty = parseInt(this.value);
                 
@@ -303,14 +412,12 @@ if (isset($products[$slug])) {
             });
         }
         
-        // Add to cart button
         const addToCartBtn = document.getElementById('add-to-cart');
         if (addToCartBtn) {
             addToCartBtn.addEventListener('click', function() {
                 const productId = <?php echo $product['id']; ?>;
                 const quantity = parseInt(document.getElementById('quantity').value);
                 
-                // AJAX request to add item to cart
                 fetch('<?php echo SITE_URL; ?>/includes/ajax/add_to_cart.php', {
                     method: 'POST',
                     headers: {
@@ -321,16 +428,13 @@ if (isset($products[$slug])) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update cart count in the navbar
                         const cartCountElement = document.getElementById('cart-count');
                         if (cartCountElement) {
                             cartCountElement.textContent = data.cart_count;
                         }
                         
-                        // Show success message
                         alert(data.message || 'Product added to cart successfully');
                     } else {
-                        // Show error message
                         alert(data.message || 'Failed to add product to cart');
                     }
                 })
@@ -341,13 +445,11 @@ if (isset($products[$slug])) {
             });
         }
         
-        // Add to wishlist button
         const addToWishlistBtn = document.getElementById('add-to-wishlist');
         if (addToWishlistBtn) {
             addToWishlistBtn.addEventListener('click', function() {
                 const productId = <?php echo $product['id']; ?>;
                 
-                // AJAX request to add item to wishlist
                 fetch('<?php echo SITE_URL; ?>/includes/ajax/add_to_wishlist.php', {
                     method: 'POST',
                     headers: {
@@ -358,16 +460,13 @@ if (isset($products[$slug])) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update wishlist count in the navbar
                         const wishlistCountElement = document.getElementById('wishlist-count');
                         if (wishlistCountElement) {
                             wishlistCountElement.textContent = data.wishlist_count;
                         }
                         
-                        // Show success message
                         alert(data.message || 'Product added to wishlist successfully');
                     } else {
-                        // Show error message
                         alert(data.message || 'Failed to add product to wishlist');
                     }
                 })
