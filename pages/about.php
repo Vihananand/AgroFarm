@@ -108,13 +108,13 @@ include_once '../includes/navbar.php';
             </p>
         </div>
         
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="text-center" data-gsap="fade-up" data-delay="0.1">
                 <div class="relative inline-block mb-4">
-                    <img src="https://picsum.photos/id/1025/300/300" alt="John Doe" class="w-40 h-40 rounded-full object-cover mx-auto">
+                    <img src="https://picsum.photos/id/1074/300/300" alt="John Doe" class="w-40 h-40 rounded-full object-cover mx-auto">
                     <div class="absolute inset-0 rounded-full border-4 border-green-500 border-t-transparent rotate-animation"></div>
                 </div>
-                <h3 class="text-xl font-bold">John Doe</h3>
+                <h3 class="text-xl font-bold">Vihan Anand</h3>
                 <p class="text-green-600 mb-2">Founder & CEO</p>
                 <p class="text-gray-600 text-sm mb-4">Agricultural Engineer with 20+ years of experience.</p>
                 <div class="flex justify-center gap-4">
@@ -125,12 +125,12 @@ include_once '../includes/navbar.php';
             
             <div class="text-center" data-gsap="fade-up" data-delay="0.2">
                 <div class="relative inline-block mb-4">
-                    <img src="https://picsum.photos/id/1000/300/300" alt="Jane Smith" class="w-40 h-40 rounded-full object-cover mx-auto">
+                    <img src="https://plus.unsplash.com/premium_photo-1666237390552-dca0ad72629c?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Jane Smith" class="w-40 h-40 rounded-full object-cover mx-auto">
                     <div class="absolute inset-0 rounded-full border-4 border-green-500 border-t-transparent rotate-animation"></div>
                 </div>
-                <h3 class="text-xl font-bold">Jane Smith</h3>
-                <p class="text-green-600 mb-2">Operations Director</p>
-                <p class="text-gray-600 text-sm mb-4">Supply chain expert specialized in agricultural logistics.</p>
+                <h3 class="text-xl font-bold">Amit Yadav</h3>
+                <p class="text-green-600 mb-2">Front End Developer</p>
+                <p class="text-gray-600 text-sm mb-4">Web Developer with 5+ years of experience.</p>
                 <div class="flex justify-center gap-4">
                     <a href="#" class="text-gray-400 hover:text-blue-500"><i class="fab fa-linkedin"></i></a>
                     <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-twitter"></i></a>
@@ -139,26 +139,12 @@ include_once '../includes/navbar.php';
             
             <div class="text-center" data-gsap="fade-up" data-delay="0.3">
                 <div class="relative inline-block mb-4">
-                    <img src="https://picsum.photos/id/1074/300/300" alt="Michael Johnson" class="w-40 h-40 rounded-full object-cover mx-auto">
+                    <img src="https://plus.unsplash.com/premium_photo-1664304362237-8040f0ecac98?q=80&w=2283&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Michael Johnson" class="w-40 h-40 rounded-full object-cover mx-auto">
                     <div class="absolute inset-0 rounded-full border-4 border-green-500 border-t-transparent rotate-animation"></div>
                 </div>
-                <h3 class="text-xl font-bold">Michael Johnson</h3>
-                <p class="text-green-600 mb-2">Head of Product Development</p>
-                <p class="text-gray-600 text-sm mb-4">Agronomist with focus on sustainable farming innovations.</p>
-                <div class="flex justify-center gap-4">
-                    <a href="#" class="text-gray-400 hover:text-blue-500"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-            
-            <div class="text-center" data-gsap="fade-up" data-delay="0.4">
-                <div class="relative inline-block mb-4">
-                    <img src="https://picsum.photos/id/1062/300/300" alt="Emily Wilson" class="w-40 h-40 rounded-full object-cover mx-auto">
-                    <div class="absolute inset-0 rounded-full border-4 border-green-500 border-t-transparent rotate-animation"></div>
-                </div>
-                <h3 class="text-xl font-bold">Emily Wilson</h3>
-                <p class="text-green-600 mb-2">Customer Relations Manager</p>
-                <p class="text-gray-600 text-sm mb-4">Former farmer with deep understanding of customer needs.</p>
+                <h3 class="text-xl font-bold">Yah Kisan Patil</h3>
+                <p class="text-green-600 mb-2">Back End Developer</p>
+                <p class="text-gray-600 text-sm mb-4">Database Expert with 10+ years of experience.</p>
                 <div class="flex justify-center gap-4">
                     <a href="#" class="text-gray-400 hover:text-blue-500"><i class="fab fa-linkedin"></i></a>
                     <a href="#" class="text-gray-400 hover:text-blue-400"><i class="fab fa-twitter"></i></a>
@@ -299,7 +285,7 @@ include_once '../includes/navbar.php';
             <div class="grid grid-cols-1 gap-12">
                 <div class="relative flex justify-between items-center" data-gsap="fade-up" data-delay="0.1">
                     <div class="w-5/12 text-right pr-8">
-                        <h3 class="text-xl font-bold text-green-700">2005</h3>
+                        <h3 class="text-xl font-bold text-green-700">2023</h3>
                         <h4 class="font-semibold mb-2">AgroFarm Founded</h4>
                         <p class="text-gray-600">Started as a small local supplier of farming equipment and seeds.</p>
                     </div>
@@ -315,7 +301,7 @@ include_once '../includes/navbar.php';
                     </div>
                     <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-green-600 z-10"></div>
                     <div class="w-5/12 pl-8">
-                        <h3 class="text-xl font-bold text-green-700">2010</h3>
+                        <h3 class="text-xl font-bold text-green-700">2023</h3>
                         <h4 class="font-semibold mb-2">Regional Expansion</h4>
                         <p class="text-gray-600">Expanded operations to cover three states with two distribution centers.</p>
                     </div>
@@ -323,7 +309,7 @@ include_once '../includes/navbar.php';
                 
                 <div class="relative flex justify-between items-center" data-gsap="fade-up" data-delay="0.3">
                     <div class="w-5/12 text-right pr-8">
-                        <h3 class="text-xl font-bold text-green-700">2015</h3>
+                        <h3 class="text-xl font-bold text-green-700">2024</h3>
                         <h4 class="font-semibold mb-2">Product Line Expansion</h4>
                         <p class="text-gray-600">Added organic produce and fresh foods to our product offerings.</p>
                     </div>
@@ -339,7 +325,7 @@ include_once '../includes/navbar.php';
                     </div>
                     <div class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-green-600 z-10"></div>
                     <div class="w-5/12 pl-8">
-                        <h3 class="text-xl font-bold text-green-700">2018</h3>
+                        <h3 class="text-xl font-bold text-green-700">2024</h3>
                         <h4 class="font-semibold mb-2">Online Platform Launch</h4>
                         <p class="text-gray-600">Launched our e-commerce platform to reach customers nationwide.</p>
                     </div>
@@ -369,8 +355,8 @@ include_once '../includes/navbar.php';
             Whether you're a commercial farmer or a home gardening enthusiast, we have everything you need to succeed.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center" data-gsap="fade-up" data-delay="0.3">
-            <a href="<?php echo SITE_URL; ?>/pages/shop.php" class="btn-primary">Shop Now</a>
-            <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="btn-secondary">Contact Us</a>
+            <a href="<?php echo SITE_URL; ?>/pages/shop.php" class="btn-primary bg-green-700 px-4 py-2 rounded-md text-white hover:bg-green-800">Shop Now</a>
+            <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="btn-secondary bg-green-700 px-4 py-2 rounded-md text-white hover:bg-green-800">Contact Us</a>
         </div>
     </div>
 </section>

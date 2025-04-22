@@ -1,26 +1,26 @@
+<?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$current_page = basename($_SERVER['PHP_SELF']);
+?>
+
 <header class="bg-white shadow-sm sticky top-0 z-40">
     <div class="container mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
             <!-- Logo -->
             <a href="<?php echo SITE_URL; ?>" class="flex items-center gap-2">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
-                    <rect width="40" height="40" rx="8" fill="#2D7738"/>
-                    <path d="M8 24C12.4183 24 16 20.4183 16 16C16 11.5817 12.4183 8 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    <path d="M8 32C16.8366 32 24 24.8366 24 16C24 7.16344 16.8366 0 8 0" stroke="#8BC34A" stroke-width="3" stroke-linecap="round"/>
-                    <path d="M20 28L24 32L28 28" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M24 18V32" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M32 14C32 14 32 8 26 8" stroke="#8BC34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M28 18C28 18 28 14 24 14" stroke="#8BC34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="text-2xl font-bold text-green-700">AgroFarm</span>
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjMkQ3NzM4Ii8+PHBhdGggZD0iTTggMjRDMTIuNDE4MyAyNCAxNiAyMC40MTgzIDE2IDE2QzE2IDExLjU4MTcgMTIuNDE4MyA4IDggOCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik04IDMyQzE2LjgzNjYgMzIgMjQgMjQuODM2NiAyNCAxNkMyNCA3LjE2MzQ0IDE2LjgzNjYgMCA4IDAiIHN0cm9rZT0iIzhCQzM0QSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjAgMjhMMjQgMzJMMjggMjgiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI0IDE4VjMyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMiAxNEMzMiAxNCAzMiA4IDI2IDgiIHN0cm9rZT0iIzhCQzM0QSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yOCAxOEMyOCAxOCAyOCAxNCAyNCAxNCIgc3Ryb2tlPSIjOEJDMzRBIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" alt="AgroFarm Logo" class="h-10 w-auto">
             </a>
             
             <!-- Desktop Navigation -->
             <div class="hidden md:flex items-center gap-6">
-                <a href="<?php echo SITE_URL; ?>" class="nav-link">Home</a>
-                <a href="<?php echo SITE_URL; ?>/pages/shop.php" class="nav-link">Shop</a>
-                <a href="<?php echo SITE_URL; ?>/pages/about.php" class="nav-link">About Us</a>
-                <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="nav-link">Contact Us</a>
+                <a href="<?php echo SITE_URL; ?>" class="<?php echo $current_page === 'index.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">Home</a>
+                <a href="<?php echo SITE_URL; ?>/pages/shop.php" class="<?php echo $current_page === 'shop.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">Shop</a>
+                <a href="<?php echo SITE_URL; ?>/pages/about.php" class="<?php echo $current_page === 'about.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">About Us</a>
+                <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="<?php echo $current_page === 'contact.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">Contact Us</a>
                 <a href="<?php echo SITE_URL; ?>/pages/custom-request.php" class="nav-link">Request Item</a>
             </div>
             
@@ -32,7 +32,7 @@
                 </button>
                 
                 <!-- Wishlist Icon -->
-                <a href="<?php echo SITE_URL; ?>/pages/wishlist.php" class="text-gray-600 hover:text-green-600 transition-colors duration-300 relative">
+                <a href="<?php echo SITE_URL; ?>/user/wishlist.php" class="text-gray-600 hover:text-green-600 transition-colors duration-300 relative">
                     <i class="fas fa-heart text-xl"></i>
                     <?php if (isLoggedIn() && getWishlistItemCount() > 0): ?>
                     <span class="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
@@ -42,7 +42,7 @@
                 </a>
                 
                 <!-- Cart Icon -->
-                <a href="<?php echo SITE_URL; ?>/pages/cart.php" class="text-gray-600 hover:text-green-600 transition-colors duration-300 relative">
+                <a href="<?php echo SITE_URL; ?>/user/cart.php" class="text-gray-600 hover:text-green-600 transition-colors duration-300 relative">
                     <i class="fas fa-shopping-cart text-xl"></i>
                     <?php if (isLoggedIn() && getCartItemCount() > 0): ?>
                     <span class="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
@@ -53,14 +53,13 @@
                 
                 <!-- User Account -->
                 <?php if (isLoggedIn()): ?>
-                <div class="relative group">
-                    <button class="text-gray-600 hover:text-green-600 transition-colors duration-300">
+                <div class="relative" id="user-menu-container">
+                    <button class="text-gray-600 hover:text-green-600 transition-colors duration-300" id="user-menu-button">
                         <i class="fas fa-user-circle text-xl"></i>
                     </button>
-                    <div class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md overflow-hidden z-50 hidden group-hover:block">
-                        <a href="<?php echo SITE_URL; ?>/pages/account/profile.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Profile</a>
-                        <a href="<?php echo SITE_URL; ?>/pages/account/orders.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Orders</a>
-                        <a href="<?php echo SITE_URL; ?>/pages/account/settings.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                    <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md overflow-hidden z-50 hidden">
+                        <a href="<?php echo SITE_URL; ?>/user/dashboard.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Profile</a>
+                        <a href="<?php echo SITE_URL; ?>/user/orders.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Orders</a>
                         <a href="<?php echo SITE_URL; ?>/pages/logout.php" class="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100">Log Out</a>
                     </div>
                 </div>
@@ -95,16 +94,7 @@
 <div id="mobile-menu" class="mobile-menu hidden">
     <div class="p-4 flex justify-between items-center border-b">
         <a href="<?php echo SITE_URL; ?>" class="flex items-center gap-2">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
-                <rect width="40" height="40" rx="8" fill="#2D7738"/>
-                <path d="M8 24C12.4183 24 16 20.4183 16 16C16 11.5817 12.4183 8 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M8 32C16.8366 32 24 24.8366 24 16C24 7.16344 16.8366 0 8 0" stroke="#8BC34A" stroke-width="3" stroke-linecap="round"/>
-                <path d="M20 28L24 32L28 28" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M24 18V32" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                <path d="M32 14C32 14 32 8 26 8" stroke="#8BC34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M28 18C28 18 28 14 24 14" stroke="#8BC34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="text-2xl font-bold text-green-700">AgroFarm</span>
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjMkQ3NzM4Ii8+PHBhdGggZD0iTTggMjRDMTIuNDE4MyAyNCAxNiAyMC40MTgzIDE2IDE2QzE2IDExLjU4MTcgMTIuNDE4MyA4IDggOCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik04IDMyQzE2LjgzNjYgMzIgMjQgMjQuODM2NiAyNCAxNkMyNCA3LjE2MzQ0IDE2LjgzNjYgMCA4IDAiIHN0cm9rZT0iIzhCQzM0QSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjAgMjhMMjQgMzJMMjggMjgiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTI0IDE4VjMyIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMiAxNEMzMiAxNCAzMiA4IDI2IDgiIHN0cm9rZT0iIzhCQzM0QSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yOCAxOEMyOCAxOCAyOCAxNCAyNCAxNCIgc3Ryb2tlPSIjOEJDMzRBIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" alt="AgroFarm Logo" class="h-10 w-auto">
         </a>
         <button id="mobile-menu-close" class="text-gray-600 hover:text-green-600 transition-colors duration-300">
             <i class="fas fa-times text-xl"></i>
@@ -112,10 +102,10 @@
     </div>
     <div class="p-4">
         <div class="flex flex-col gap-4">
-            <a href="<?php echo SITE_URL; ?>" class="text-lg py-2 border-b border-gray-200">Home</a>
-            <a href="<?php echo SITE_URL; ?>/pages/shop.php" class="text-lg py-2 border-b border-gray-200">Shop</a>
-            <a href="<?php echo SITE_URL; ?>/pages/about.php" class="text-lg py-2 border-b border-gray-200">About Us</a>
-            <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="text-lg py-2 border-b border-gray-200">Contact Us</a>
+            <a href="<?php echo SITE_URL; ?>" class="text-lg py-2 border-b border-gray-200 <?php echo $current_page === 'index.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">Home</a>
+            <a href="<?php echo SITE_URL; ?>/pages/shop.php" class="text-lg py-2 border-b border-gray-200 <?php echo $current_page === 'shop.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">Shop</a>
+            <a href="<?php echo SITE_URL; ?>/pages/about.php" class="text-lg py-2 border-b border-gray-200 <?php echo $current_page === 'about.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">About Us</a>
+            <a href="<?php echo SITE_URL; ?>/pages/contact.php" class="text-lg py-2 border-b border-gray-200 <?php echo $current_page === 'contact.php' ? 'text-green-600' : 'text-gray-600 hover:text-green-600'; ?>">Contact Us</a>
             <a href="<?php echo SITE_URL; ?>/pages/custom-request.php" class="text-lg py-2 border-b border-gray-200">Request Item</a>
             <?php if (!isLoggedIn()): ?>
             <div class="flex gap-4 mt-4">
@@ -123,8 +113,8 @@
                 <a href="<?php echo SITE_URL; ?>/pages/signup.php" class="btn-secondary flex-1 text-center">Sign Up</a>
             </div>
             <?php else: ?>
-            <a href="<?php echo SITE_URL; ?>/pages/account/profile.php" class="text-lg py-2 border-b border-gray-200">My Profile</a>
-            <a href="<?php echo SITE_URL; ?>/pages/account/orders.php" class="text-lg py-2 border-b border-gray-200">My Orders</a>
+            <a href="<?php echo SITE_URL; ?>/user/dashboard.php" class="text-lg py-2 border-b border-gray-200">My Profile</a>
+            <a href="<?php echo SITE_URL; ?>/user/orders.php" class="text-lg py-2 border-b border-gray-200">My Orders</a>
             <a href="<?php echo SITE_URL; ?>/pages/logout.php" class="text-lg py-2 border-b border-gray-200 text-red-600">Log Out</a>
             <?php endif; ?>
         </div>
@@ -145,6 +135,31 @@
         document.getElementById('mobile-menu').classList.add('hidden');
         document.body.style.overflow = ''; 
     });
+
+    // User menu dropdown functionality
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenuDropdown = document.getElementById('user-menu-dropdown');
+    const userMenuContainer = document.getElementById('user-menu-container');
+
+    if (userMenuButton && userMenuDropdown) {
+        // Toggle menu on button click
+        userMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenuDropdown.classList.toggle('hidden');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuContainer.contains(e.target)) {
+                userMenuDropdown.classList.add('hidden');
+            }
+        });
+
+        // Prevent menu from closing when clicking inside dropdown
+        userMenuDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
 </script>
 
 <style>

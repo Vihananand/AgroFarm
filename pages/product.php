@@ -12,13 +12,13 @@ $products = [
         'id' => 1,
         'name' => 'Organic Fertilizer',
         'slug' => 'organic-fertilizer',
-        'image' => 'https://picsum.photos/id/134/600/400',
+        'image' => 'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80',
         'price' => 29.99,
         'sale_price' => 24.99,
         'stock' => 15,
         'category_name' => 'Fertilizers',
         'category_slug' => 'fertilizers',
-        'description' => 'Our premium organic fertilizer is made from 100% natural ingredients. It provides essential nutrients to your plants without harmful chemicals. Perfect for organic gardening and environmentally conscious farmers.',
+        'description' => 'Our premium organic fertilizer is made from 100% natural ingredients, providing essential nutrients for your plants without harmful chemicals. Ideal for all types of gardens, it improves soil health while promoting vigorous plant growth. Each bag covers approximately 500 square feet of garden space.',
         'specifications' => [
             'Weight' => '5 kg',
             'Composition' => 'Compost, Bone Meal, Seaweed',
@@ -30,13 +30,13 @@ $products = [
         'id' => 2,
         'name' => 'Premium Garden Hoe',
         'slug' => 'premium-garden-hoe',
-        'image' => 'https://picsum.photos/id/150/600/400',
+        'image' => 'https://images.unsplash.com/photo-1585483266669-f9ff856159ad?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 49.99,
         'sale_price' => null,
         'stock' => 8,
         'category_name' => 'Equipment',
         'category_slug' => 'equipment',
-        'description' => 'Our premium garden hoe features a durable stainless steel blade and comfortable ergonomic handle. Perfect for weeding, cultivating soil, and creating furrows for planting.',
+        'description' => 'This premium garden hoe features an ergonomic design and durable construction for comfortable, long-lasting use. The sharp blade easily cuts through soil and weeds, while the hardwood handle provides excellent grip. Perfect for maintaining garden beds, creating furrows, and general garden maintenance.',
         'specifications' => [
             'Handle Length' => '120 cm',
             'Blade Width' => '15 cm',
@@ -48,13 +48,13 @@ $products = [
         'id' => 3,
         'name' => 'Organic Tomato Seeds',
         'slug' => 'organic-tomato-seeds',
-        'image' => 'https://picsum.photos/id/145/600/400',
+        'image' => 'https://plus.unsplash.com/premium_photo-1724256185670-ab944897f4bc?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 5.99,
         'sale_price' => 4.99,
         'stock' => 50,
         'category_name' => 'Seeds',
         'category_slug' => 'seeds',
-        'description' => 'Our organic tomato seeds are sourced from heirloom varieties, grown without pesticides or genetic modification. These seeds produce juicy, flavorful tomatoes that are perfect for home gardens.',
+        'description' => 'Grow delicious, juicy tomatoes with our certified organic seeds. Non-GMO and naturally grown, these seeds offer excellent germination rates and produce disease-resistant plants. Each packet contains approximately 50 seeds, enough to grow a bountiful harvest of flavorful tomatoes for your home garden.',
         'specifications' => [
             'Variety' => 'Beefsteak',
             'Quantity' => '50 seeds per packet',
@@ -67,15 +67,15 @@ $products = [
         'id' => 4,
         'name' => 'Mini Tractor',
         'slug' => 'mini-tractor',
-        'image' => 'https://picsum.photos/id/167/600/400',
+        'image' => 'https://images.unsplash.com/photo-1614977645540-7abd88ba8e56?q=80&w=2573&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 2999.99,
         'sale_price' => 2799.99,
         'stock' => 0,
         'category_name' => 'Machinery',
         'category_slug' => 'machinery',
-        'description' => 'This compact mini tractor is perfect for small farms and large gardens. With its powerful engine and versatile attachments, it can handle plowing, tilling, mowing, and more with ease.',
+        'description' => 'This compact mini tractor is perfect for small to medium-sized farms and gardens. With 25 horsepower and a versatile attachment system, it handles plowing, tilling, mowing, and more with ease. Fuel-efficient engine and comfortable operator station make long working hours more productive and less fatiguing.',
         'specifications' => [
-            'Engine' => '15 HP Diesel',
+            'Engine' => '25 HP Diesel',
             'Transmission' => '8-speed gear shift',
             'Dimensions' => '2.3m x 1.2m x 1.5m',
             'Weight' => '580 kg',
@@ -86,7 +86,7 @@ $products = [
         'id' => 5,
         'name' => 'Fresh Apples (5kg)',
         'slug' => 'fresh-apples',
-        'image' => 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXBwbGVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
+        'image' => 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80',
         'price' => 12.99,
         'sale_price' => null,
         'stock' => 20,
@@ -105,7 +105,7 @@ $products = [
         'id' => 6,
         'name' => 'Gardening Gloves',
         'slug' => 'gardening-gloves',
-        'image' => 'https://images.unsplash.com/photo-1636554613229-dfacf129c43f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Z2FyZGVuaW5nJTIwZ2xvdmVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
+        'image' => 'https://images.unsplash.com/photo-1582586131076-6c308a437385?q=80&w=2680&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 15.99,
         'sale_price' => 12.99,
         'stock' => 30,
@@ -124,7 +124,7 @@ $products = [
         'id' => 7,
         'name' => 'Carrot Seeds',
         'slug' => 'carrot-seeds',
-        'image' => 'https://images.unsplash.com/photo-1582515073490-39981397c445?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2VlZHN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60',
+        'image' => 'https://images.unsplash.com/photo-1625243436520-1372a94c84ab?q=80&w=2612&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 3.99,
         'sale_price' => null,
         'stock' => 45,
@@ -144,7 +144,7 @@ $products = [
         'id' => 8,
         'name' => 'Irrigation System',
         'slug' => 'irrigation-system',
-        'image' => 'https://images.unsplash.com/photo-1599509330848-1ad10170774b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aXJyaWdhdGlvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+        'image' => 'https://plus.unsplash.com/premium_photo-1661825536186-19606cd9a0f1?q=80&w=2164&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 199.99,
         'sale_price' => 179.99,
         'stock' => 10,
@@ -163,7 +163,7 @@ $products = [
         'id' => 9,
         'name' => 'Potato Harvester',
         'slug' => 'potato-harvester',
-        'image' => 'https://cdn.pixabay.com/photo/2021/10/17/09/18/tractor-6718387_1280.jpg',
+        'image' => 'https://images.unsplash.com/photo-1698505949250-51f8b2c9c8c6?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'price' => 1499.99,
         'sale_price' => null,
         'stock' => 5,
@@ -183,7 +183,7 @@ $products = [
         'id' => 10,
         'name' => 'Organic Strawberries (1kg)',
         'slug' => 'organic-strawberries',
-        'image' => 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RyYXdiZXJyaWVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
+        'image' => 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&h=400&q=80',
         'price' => 8.99,
         'sale_price' => 7.99,
         'stock' => 15,
@@ -235,12 +235,12 @@ if ($product === null) {
 
 <section class="py-12">
     <div class="container mx-auto px-4">
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="product-image">
-                <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="w-full rounded-lg shadow-md">
+        <div class="grid md:grid-cols-12 gap-8 mb-10">
+            <div class="md:col-span-5 product-image-container">
+                <img data-image="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="w-full rounded-lg shadow-md product-image">
             </div>
             
-            <div class="product-info">
+            <div class="product-info md:col-span-7">
                 <h1 class="text-3xl md:text-4xl font-bold mb-2"><?php echo $product['name']; ?></h1>
                 
                 <div class="text-sm text-green-600 mb-4">
@@ -328,9 +328,9 @@ if ($product === null) {
             ?>
             <div class="product-card">
                 <div class="relative overflow-hidden group">
-                    <img src="<?php echo $related['image']; ?>" 
+                    <img data-image="<?php echo $related['image']; ?>" 
                          alt="<?php echo $related['name']; ?>" 
-                         class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                         class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110 product-image">
                     
                     <?php if ($related['sale_price'] && $related['sale_price'] < $related['price']): ?>
                     <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -374,7 +374,33 @@ if ($product === null) {
 </section>
 
 <script>
+    // Function to get the correct image URL
+    function getImageUrl(image) {
+        if (!image) return '<?php echo SITE_URL; ?>/assets/images/products/default-product.jpg';
+        
+        if (image.startsWith('http://') || image.startsWith('https://')) {
+            return image;
+        } else if (image.startsWith('/')) {
+            return '<?php echo SITE_URL; ?>' + image;
+        } else {
+            return '<?php echo SITE_URL; ?>/assets/images/products/' + image;
+        }
+    }
+    
+    // Load images when the page is ready
     document.addEventListener('DOMContentLoaded', function() {
+        const productImages = document.querySelectorAll('.product-image');
+        
+        productImages.forEach(function(img) {
+            const imagePath = img.getAttribute('data-image');
+            img.src = getImageUrl(imagePath);
+            
+            img.onerror = function() {
+                this.src = '<?php echo SITE_URL; ?>/assets/images/products/default-product.jpg';
+                this.onerror = null;
+            }
+        });
+        
         const quantityInput = document.getElementById('quantity');
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');

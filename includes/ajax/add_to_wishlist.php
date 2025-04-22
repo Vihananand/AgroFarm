@@ -1,103 +1,81 @@
 <?php
-require_once '../config.php';
-
 header('Content-Type: application/json');
+require_once '../config.php';
+require_once '../db_connect.php';
 
-$response = [
-    'success' => false,
-    'message' => 'An error occurred.',
-    'wishlist_count' => 0
-];
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    $response['message'] = 'Invalid request method.';
-    echo json_encode($response);
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Please login to add items to wishlist'
+    ]);
     exit;
 }
 
-if (!isset($_POST['product_id'])) {
-    $response['message'] = 'Missing required parameter: product_id.';
-    echo json_encode($response);
-    exit;
-}
+$user_id = $_SESSION['user_id'];
 
-$product_id = (int)$_POST['product_id'];
-
-if ($product_id <= 0) {
-    $response['message'] = 'Invalid product ID.';
-    echo json_encode($response);
-    exit;
-}
-
-try {
-    $all_products = [
-        1 => [
-            'id' => 1,
-            'name' => 'Organic Fertilizer',
-        ],
-        2 => [
-            'id' => 2,
-            'name' => 'Premium Garden Hoe',
-        ],
-        3 => [
-            'id' => 3,
-            'name' => 'Organic Tomato Seeds',
-        ],
-        4 => [
-            'id' => 4,
-            'name' => 'Mini Tractor',
-        ],
-        5 => [
-            'id' => 5,
-            'name' => 'Fresh Apples (5kg)',
-        ],
-        6 => [
-            'id' => 6,
-            'name' => 'Gardening Gloves',
-        ],
-        7 => [
-            'id' => 7,
-            'name' => 'Carrot Seeds',
-        ],
-        8 => [
-            'id' => 8,
-            'name' => 'Irrigation System',
-        ],
-        9 => [
-            'id' => 9,
-            'name' => 'Potato Harvester',
-        ],
-        10 => [
-            'id' => 10,
-            'name' => 'Organic Strawberries (1kg)',
-        ]
-    ];
-    
-    if (!isset($all_products[$product_id])) {
-        $response['message'] = 'Product not found.';
-        echo json_encode($response);
+// Handle POST request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if product_id is provided
+    if (!isset($_POST['product_id'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Product ID is required'
+        ]);
         exit;
     }
-    
-    if (!isset($_SESSION['wishlist'])) {
-        $_SESSION['wishlist'] = [];
-    }
-    
-    if (in_array($product_id, $_SESSION['wishlist'])) {
-        $response['success'] = true;
-        $response['message'] = 'Product is already in your wishlist.';
-    } else {
-        $_SESSION['wishlist'][] = $product_id;
-        $response['success'] = true;
-        $response['message'] = 'Product added to wishlist successfully.';
-    }
-    
-    $response['wishlist_count'] = count($_SESSION['wishlist']);
-    
-} catch (Exception $e) {
-    error_log('Wishlist error: ' . $e->getMessage());
-    $response['message'] = 'A system error occurred. Please try again later.';
-}
 
-echo json_encode($response);
-exit; 
+    $product_id = (int)$_POST['product_id'];
+
+    try {
+        // Check if product exists
+        $stmt = $conn->prepare("SELECT id FROM products WHERE id = ?");
+        $stmt->execute([$product_id]);
+        
+        if ($stmt->rowCount() === 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Product not found'
+            ]);
+            exit;
+        }
+        
+        // Check if product already in wishlist
+        $stmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?");
+        $stmt->execute([$user_id, $product_id]);
+        
+        if ($stmt->rowCount() > 0) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Product already in wishlist'
+            ]);
+            exit;
+        }
+        
+        // Add to wishlist
+        $stmt = $conn->prepare("INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)");
+        $stmt->execute([$user_id, $product_id]);
+        
+        // Also add to wishlist_items table for consistency
+        $stmt = $conn->prepare("INSERT IGNORE INTO wishlist_items (user_id, product_id) VALUES (?, ?)");
+        $stmt->execute([$user_id, $product_id]);
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Product added to wishlist successfully'
+        ]);
+        
+    } catch (PDOException $e) {
+        error_log("Wishlist error: " . $e->getMessage());
+        echo json_encode([
+            'success' => false,
+            'message' => 'An error occurred while adding to wishlist'
+        ]);
+    }
+    exit;
+} 

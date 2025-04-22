@@ -1,16 +1,34 @@
 <?php
-session_start();
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    // Set session cookie parameters for better security
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    session_start();
+}
 
+// Define constants
 define('SITE_NAME', 'AgroFarm');
 define('SITE_URL', 'http://localhost/AgroFarm');
 define('ADMIN_EMAIL', 'admin@agrofarm.com');
 
-require_once __DIR__ . '/db.php';
+// Include database connection
+require_once __DIR__ . '/db_connect.php';
+
+// Include auth functions
+require_once __DIR__ . '/auth_functions.php';
 
 $db_connected = false;
 
 date_default_timezone_set('UTC');
 
+// Helper functions
 function sanitize($data) {
     $data = trim($data);
     $data = stripslashes($data);
@@ -25,30 +43,6 @@ function redirect($url) {
         echo '<script>window.location.href="' . $url . '";</script>';
     }
     exit();
-}
-
-function isLoggedIn() {
-    return isset($_SESSION['user_id']);
-}
-
-function getUserId() {
-    return $_SESSION['user_id'] ?? null;
-}
-
-function getCartItemCount() {
-    if (!isset($_SESSION['cart'])) {
-        return 0;
-    }
-    
-    return array_sum($_SESSION['cart']);
-}
-
-function getWishlistItemCount() {
-    if (!isset($_SESSION['wishlist'])) {
-        return 0;
-    }
-    
-    return count($_SESSION['wishlist']);
 }
 
 function setFlashMessage($type, $message) {

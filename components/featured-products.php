@@ -1,58 +1,32 @@
 <?php
-$featured_products = [
-    [
-        'id' => 1,
-        'name' => 'Organic Fertilizer',
-        'slug' => 'organic-fertilizer',
-        'image' => 'https://picsum.photos/id/134/600/400',
-        'price' => 29.99,
-        'sale_price' => 24.99,
-        'stock' => 15,
-        'category_name' => 'Fertilizers',
-        'category_slug' => 'fertilizers'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Premium Garden Hoe',
-        'slug' => 'premium-garden-hoe',
-        'image' => 'https://picsum.photos/id/150/600/400',
-        'price' => 49.99,
-        'sale_price' => null,
-        'stock' => 8,
-        'category_name' => 'Equipment',
-        'category_slug' => 'equipment'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Organic Tomato Seeds',
-        'slug' => 'organic-tomato-seeds',
-        'image' => 'https://picsum.photos/id/145/600/400',
-        'price' => 5.99,
-        'sale_price' => 4.99,
-        'stock' => 50,
-        'category_name' => 'Seeds',
-        'category_slug' => 'seeds'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Mini Tractor',
-        'slug' => 'mini-tractor',
-        'image' => 'https://picsum.photos/id/167/600/400',
-        'price' => 2999.99,
-        'sale_price' => 2799.99,
-        'stock' => 0,
-        'category_name' => 'Machinery',
-        'category_slug' => 'machinery'
-    ]
-];
+require_once __DIR__ . '/../includes/db_connect.php';
+
+// Fetch featured products from the database with their correct category information
+$stmt = $conn->prepare("
+    SELECT p.*, c.name as category_name, c.slug as category_slug 
+    FROM products p 
+    LEFT JOIN categories c ON p.category_id = c.id 
+    WHERE p.featured = 1
+    ORDER BY p.created_at DESC 
+    LIMIT 4
+");
+$stmt->execute();
+$featured_products = $stmt->fetchAll();
+
+// Get image URL function
+function getImageUrl($image) {
+    if (!$image) return '/AgroFarm/assets/images/products/default-product.jpg';
+    return '/AgroFarm/assets/images/products/' . $image;
+}
 
 foreach ($featured_products as $product) {
 ?>
-        <div class="product-card" data-gsap="fade-up">
+        <div class="product-card" data-gsap="fade-up" data-category="<?php echo htmlspecialchars($product['category_slug']); ?>">
             <div class="relative overflow-hidden group">
-                <img src="<?php echo $product['image']; ?>" 
+                <img src="<?php echo getImageUrl($product['image']); ?>" 
                      alt="<?php echo $product['name']; ?>" 
-                     class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                     class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                     onerror="this.src='/AgroFarm/assets/images/products/default-product.jpg'">
                 
                 <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
                 <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -185,96 +159,124 @@ foreach ($featured_products as $product) {
             modalContent.classList.add('hidden');
         }
         
-        <?php foreach ($featured_products as $product): ?>
-        if (productId === <?php echo $product['id']; ?>) {
-            if (loadingSpinner) {
-                loadingSpinner.classList.add('hidden');
-                modalContent.classList.remove('hidden');
-            }
+        // Fetch product details from the server
+        fetch('<?php echo SITE_URL; ?>/includes/ajax/get_product.php?id=' + productId)
+            .then(response => response.json())
+            .then(product => {
+                if (loadingSpinner) {
+                    loadingSpinner.classList.add('hidden');
+                    modalContent.classList.remove('hidden');
+                }
 
-            const productHTML = `
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Product Image -->
-                    <div class="product-image">
-                        <img src="<?php echo $product['image']; ?>" 
-                            alt="<?php echo $product['name']; ?>" 
-                            class="w-full h-auto object-cover rounded-lg">
-                        <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
-                        <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                            Sale
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <!-- Product Details -->
-                    <div class="product-details">
-                        <span class="text-sm text-green-600">
-                            <?php echo $product['category_name']; ?>
-                        </span>
-                        <h2 class="text-2xl font-bold mb-2"><?php echo $product['name']; ?></h2>
-                        
-                        <div class="price-wrapper mb-4">
-                            <?php if ($product['sale_price'] && $product['sale_price'] < $product['price']): ?>
-                            <span class="text-2xl font-bold text-green-600">$<?php echo number_format($product['sale_price'], 2); ?></span>
-                            <span class="text-lg text-gray-500 line-through ml-2">$<?php echo number_format($product['price'], 2); ?></span>
-                            <?php else: ?>
-                            <span class="text-2xl font-bold text-green-600">$<?php echo number_format($product['price'], 2); ?></span>
-                            <?php endif; ?>
+                // Use the same image URL function for the modal
+                const productImage = getImageUrl(product.image);
+
+                const productHTML = `
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Product Image -->
+                        <div class="product-image">
+                            <img src="${productImage}" 
+                                alt="${product.name}" 
+                                class="w-full h-auto object-cover rounded-lg"
+                                onerror="this.src='/AgroFarm/assets/images/products/default-product.jpg'">
+                            ${product.sale_price && product.sale_price < product.price ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                                Sale
+                            </div>
+                            ` : ''}
                         </div>
                         
-                        <div class="stock mb-4">
-                            <?php if ($product['stock'] > 0): ?>
-                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                                In Stock (<?php echo $product['stock']; ?> available)
+                        <!-- Product Details -->
+                        <div class="product-details">
+                            <span class="text-sm text-green-600">
+                                ${product.category_name}
                             </span>
-                            <?php else: ?>
-                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
-                                Out of Stock
-                            </span>
-                            <?php endif; ?>
+                            <h2 class="text-2xl font-bold mb-2">${product.name}</h2>
+                            
+                            <div class="price-wrapper mb-4">
+                                ${product.sale_price && product.sale_price < product.price ? `
+                                <span class="text-2xl font-bold text-green-600">$${parseFloat(product.sale_price).toFixed(2)}</span>
+                                <span class="text-lg text-gray-500 line-through ml-2">$${parseFloat(product.price).toFixed(2)}</span>
+                                ` : `
+                                <span class="text-2xl font-bold text-green-600">$${parseFloat(product.price).toFixed(2)}</span>
+                                `}
+                            </div>
+                            
+                            <div class="stock mb-4">
+                                ${product.stock > 0 ? `
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                                    In Stock (${product.stock} available)
+                                </span>
+                                ` : `
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+                                    Out of Stock
+                                </span>
+                                `}
+                            </div>
+                            
+                            <div class="description mb-6">
+                                <p class="text-gray-700">${product.description}</p>
+                            </div>
+                            
+                            ${product.stock > 0 ? `
+                            <div class="actions flex gap-4 mb-6">
+                                <button onclick="addToCart(${product.id})" 
+                                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition-colors flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                                </button>
+                                <button onclick="addToWishlist(${product.id})" 
+                                        class="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 py-3 px-6 rounded-md transition-colors flex items-center justify-center">
+                                    <i class="far fa-heart mr-2"></i>
+                                </button>
+                            </div>
+                            ` : `
+                            <div class="mb-6">
+                                <button class="w-full bg-gray-300 text-gray-600 cursor-not-allowed py-3 px-6 rounded-md flex items-center justify-center">
+                                    <i class="fas fa-ban mr-2"></i> Out of Stock
+                                </button>
+                            </div>
+                            `}
+                            
+                            <a href="<?php echo SITE_URL; ?>/pages/product.php?slug=${product.slug}" 
+                               class="text-green-600 hover:text-green-800 flex items-center">
+                                <span>View Full Details</span>
+                                <i class="fas fa-chevron-right ml-2 text-sm"></i>
+                            </a>
                         </div>
-                        
-                        <div class="description mb-6">
-                            <p class="text-gray-700">This is a sample product description. In a real application, this would contain detailed information about the product.</p>
-                        </div>
-                        
-                        <?php if ($product['stock'] > 0): ?>
-                        <div class="actions flex gap-4 mb-6">
-                            <button onclick="addToCart(<?php echo $product['id']; ?>)" 
-                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition-colors flex items-center justify-center">
-                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
-                            </button>
-                            <button onclick="addToWishlist(<?php echo $product['id']; ?>)" 
-                                    class="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 py-3 px-6 rounded-md transition-colors flex items-center justify-center">
-                                <i class="far fa-heart mr-2"></i>
-                            </button>
-                        </div>
-                        <?php else: ?>
-                        <div class="mb-6">
-                            <button class="w-full bg-gray-300 text-gray-600 cursor-not-allowed py-3 px-6 rounded-md flex items-center justify-center">
-                                <i class="fas fa-ban mr-2"></i> Out of Stock
-                            </button>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <a href="<?php echo SITE_URL; ?>/pages/product.php?slug=<?php echo $product['slug']; ?>" 
-                           class="text-green-600 hover:text-green-800 flex items-center">
-                            <span>View Full Details</span>
-                            <i class="fas fa-chevron-right ml-2 text-sm"></i>
-                        </a>
                     </div>
-                </div>
-            `;
-            
-            modalContent.innerHTML = productHTML;
-            return;
-        }
-        <?php endforeach; ?>
-        
-        if (loadingSpinner) {
-            loadingSpinner.classList.add('hidden');
-            modalContent.classList.remove('hidden');
-        }
-        modalContent.innerHTML = '<p class="text-center text-red-600">Product not found</p>';
+                `;
+                
+                modalContent.innerHTML = productHTML;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (loadingSpinner) {
+                    loadingSpinner.classList.add('hidden');
+                    modalContent.classList.remove('hidden');
+                }
+                modalContent.innerHTML = '<p class="text-center text-red-600">Error loading product details</p>';
+            });
     }
+    
+    // Add the getImageUrl function to JavaScript as well
+    function getImageUrl(image) {
+        if (!image) return '/AgroFarm/assets/images/products/default-product.jpg';
+        return '/AgroFarm/assets/images/products/' + image;
+    }
+    
+    // Initialize category filtering if applicable
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+        
+        if (categoryParam) {
+            // If a category is specified in the URL, filter featured products
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                if (card.dataset.category !== categoryParam) {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    });
 </script>

@@ -3,6 +3,7 @@ $page_title = "Sign Up";
 $page_description = "Create an AgroFarm account to start shopping for agricultural products and more.";
 
 include_once '../includes/config.php';
+include_once '../includes/db_connect.php';
 
 if (isLoggedIn()) {
     redirect(SITE_URL);

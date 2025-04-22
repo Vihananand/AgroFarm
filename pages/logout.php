@@ -1,21 +1,11 @@
 <?php
 include_once '../includes/config.php';
+include_once '../includes/auth_functions.php';
 
-$_SESSION = array();
-
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
-}
-
-if (isset($_COOKIE['remember_token'])) {
-    setcookie('remember_token', '', time() - 3600, '/');
-}
-
+// Destroy the session
 session_destroy();
 
-redirect(SITE_URL);
+// Redirect to login page
+header("Location: " . SITE_URL . "/pages/login.php");
+exit();
 ?> 
