@@ -18,12 +18,31 @@ if (isset($_POST['update_status']) && isset($_POST['order_id']) && isset($_POST[
     try {
         $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
         $stmt->execute([$status, $order_id]);
+        
+        // If it's an AJAX request, return JSON response
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => 'Order status updated successfully']);
+            exit;
+        }
+        
+        // For non-AJAX requests, set flash message and redirect
         setFlashMessage('success', 'Order status updated successfully');
+        redirect('/admin/orders.php');
     } catch (PDOException $e) {
         error_log("Error updating order status: " . $e->getMessage());
+        
+        // If it's an AJAX request, return JSON error response
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Error updating order status']);
+            exit;
+        }
+        
+        // For non-AJAX requests, set flash message and redirect
         setFlashMessage('error', 'Error updating order status');
+        redirect('/admin/orders.php');
     }
-    redirect('/admin/orders.php');
 }
 
 // Pagination
@@ -76,7 +95,7 @@ include_once '../includes/navbar.php';
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold">Manage Orders</h1>
             <div class="flex space-x-4">
-                <a href="/admin/customers.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                <a href="<?php echo SITE_URL; ?>/admin/customers.php" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                     Manage Customers
                 </a>
             </div>
@@ -104,7 +123,7 @@ include_once '../includes/navbar.php';
                     Filter
                 </button>
                 <?php if ($status_filter): ?>
-                    <a href="/admin/orders.php" class="text-blue-600 hover:text-blue-800">Clear Filter</a>
+                    <a href="<?php echo SITE_URL; ?>/admin/orders.php" class="text-blue-600 hover:text-blue-800">Clear Filter</a>
                 <?php endif; ?>
             </form>
         </div>
@@ -158,22 +177,21 @@ include_once '../includes/navbar.php';
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <form method="POST" class="flex items-center space-x-2">
-                                        <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                        <select name="status" class="text-sm rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <div class="flex items-center space-x-2">
+                                        <select data-order-id="<?php echo $order['id']; ?>" class="status-select text-sm rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
                                             <option value="pending" <?php echo $order['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
                                             <option value="processing" <?php echo $order['status'] === 'processing' ? 'selected' : ''; ?>>Processing</option>
                                             <option value="shipped" <?php echo $order['status'] === 'shipped' ? 'selected' : ''; ?>>Shipped</option>
                                             <option value="delivered" <?php echo $order['status'] === 'delivered' ? 'selected' : ''; ?>>Delivered</option>
                                             <option value="cancelled" <?php echo $order['status'] === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
                                         </select>
-                                        <button type="submit" name="update_status" class="text-green-600 hover:text-green-900 text-sm">
+                                        <button onclick="updateOrderStatus(this)" data-order-id="<?php echo $order['id']; ?>" class="text-green-600 hover:text-green-900 text-sm">
                                             Update
                                         </button>
-                                    </form>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="/admin/order-details.php?id=<?php echo $order['id']; ?>" class="text-indigo-600 hover:text-indigo-900">
+                                    <a href="<?php echo SITE_URL; ?>/admin/order-details.php?id=<?php echo $order['id']; ?>" class="text-indigo-600 hover:text-indigo-900">
                                         View Details
                                     </a>
                                 </td>
@@ -211,7 +229,75 @@ include_once '../includes/navbar.php';
                 </nav>
             </div>
         <?php endif; ?>
+        
+        <div id="toast" class="fixed bottom-4 right-4 z-50 transform transition-transform duration-300 translate-y-full">
+            <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span id="toast-message"></span>
+            </div>
+        </div>
+        
+        <script>
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            // Update toast style based on message type
+            toast.firstElementChild.className = `bg-${isError ? 'red' : 'green'}-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center`;
+            
+            // Set message
+            toastMessage.textContent = message;
+            
+            // Show toast
+            toast.classList.remove('translate-y-full');
+            
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-y-full');
+            }, 3000);
+        }
+
+        function updateOrderStatus(button) {
+            const orderId = button.dataset.orderId;
+            const select = document.querySelector(`select[data-order-id="${orderId}"]`);
+            const status = select.value;
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('order_id', orderId);
+            formData.append('status', status);
+            formData.append('update_status', '1');
+            
+            // Send AJAX request
+            fetch(window.location.pathname, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast(data.message || 'Status updated successfully');
+                // Optionally refresh the page after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error updating order status', true);
+            });
+        }
+        </script>
     </div>
 </main>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>

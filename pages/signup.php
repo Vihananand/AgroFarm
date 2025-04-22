@@ -15,10 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = sanitize($_POST['first_name'] ?? '');
     $last_name = sanitize($_POST['last_name'] ?? '');
     $email = sanitize($_POST['email'] ?? '');
+    $phone = sanitize($_POST['phone'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
-    if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($phone) || empty($password) || empty($confirm_password)) {
         $error = 'All fields are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address.';
@@ -35,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
-                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");
-                $result = $stmt->execute([$first_name, $last_name, $email, $hashed_password]);
+                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, phone, password) VALUES (?, ?, ?, ?, ?)");
+                $result = $stmt->execute([$first_name, $last_name, $email, $phone, $hashed_password]);
                 
                 if ($result) {
                     $user_id = $conn->lastInsertId();
@@ -105,6 +106,16 @@ include_once '../includes/navbar.php';
                                 </div>
                                 <input type="text" id="last_name" name="last_name" class="pl-10 pr-4 py-3 w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg transition-all duration-200" placeholder="Doe" required value="<?php echo $_POST['last_name'] ?? ''; ?>">
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="phone" class="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-phone text-gray-400"></i>
+                            </div>
+                            <input type="tel" id="phone" name="phone" class="pl-10 pr-4 py-3 w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg transition-all duration-200" placeholder="+1 (555) 000-0000" value="<?php echo $_POST['phone'] ?? ''; ?>">
                         </div>
                     </div>
                     
@@ -252,4 +263,4 @@ include_once '../includes/navbar.php';
     });
 </script>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>

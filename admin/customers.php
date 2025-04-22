@@ -50,6 +50,7 @@ try {
     // Get customers for current page with their order statistics
     $stmt = $conn->prepare("
         SELECT u.*,
+               COALESCE(u.status, 'active') as status,
                COUNT(DISTINCT o.id) as total_orders,
                COALESCE(SUM(o.total_amount), 0) as total_spent,
                MAX(o.created_at) as last_order_date
@@ -291,4 +292,4 @@ include_once '../includes/header.php';
     </main>
 </div>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>

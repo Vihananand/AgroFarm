@@ -183,9 +183,11 @@ switch ($sort_by) {
                             <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($product['description']); ?></p>
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <span class="text-lg font-bold text-green-600">$<?php echo number_format($product['price'], 2); ?></span>
                                     <?php if (!empty($product['sale_price']) && $product['sale_price'] < $product['price']): ?>
-                                    <span class="text-sm text-gray-500 line-through ml-2">$<?php echo number_format($product['sale_price'], 2); ?></span>
+                                    <span class="text-lg font-bold text-green-600">$<?php echo number_format($product['sale_price'], 2); ?></span>
+                                    <span class="text-sm text-gray-500 line-through ml-2">$<?php echo number_format($product['price'], 2); ?></span>
+                                    <?php else: ?>
+                                    <span class="text-lg font-bold text-green-600">$<?php echo number_format($product['price'], 2); ?></span>
                                     <?php endif; ?>
                                 </div>
                                 <a href="product.php?id=<?php echo $product['id']; ?>" 
@@ -350,8 +352,12 @@ function renderProducts() {
                 <p class="text-gray-600 mb-2">${product.description}</p>
                 <div class="flex justify-between items-center">
                     <div>
-                        <span class="text-lg font-bold text-green-600">$${product.price}</span>
-                        ${product.sale_price ? `<span class="text-sm text-gray-500 line-through ml-2">$${product.sale_price}</span>` : ''}
+                        ${product.sale_price && product.sale_price < product.price ? `
+                            <span class="text-lg font-bold text-green-600">$${product.sale_price}</span>
+                            <span class="text-sm text-gray-500 line-through ml-2">$${product.price}</span>
+                        ` : `
+                            <span class="text-lg font-bold text-green-600">$${product.price}</span>
+                        `}
                     </div>
                     <button onclick="viewProduct(${product.id})" 
                             class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
@@ -412,8 +418,12 @@ function viewProduct(productId) {
         <div>
             <p class="text-gray-600 mb-4">${product.description}</p>
             <div class="mb-4">
-                <span class="text-2xl font-bold text-green-600">$${product.price}</span>
-                ${product.sale_price ? `<span class="text-lg text-gray-500 line-through ml-2">$${product.sale_price}</span>` : ''}
+                ${product.sale_price && product.sale_price < product.price ? `
+                    <span class="text-2xl font-bold text-green-600">$${product.sale_price}</span>
+                    <span class="text-lg text-gray-500 line-through ml-2">$${product.price}</span>
+                ` : `
+                    <span class="text-2xl font-bold text-green-600">$${product.price}</span>
+                `}
             </div>
             <div class="mb-4">
                 <span class="font-semibold">Category:</span> ${product.category_name || 'Uncategorized'}
@@ -644,4 +654,4 @@ document.getElementById('product-modal').addEventListener('click', (e) => {
     });
 </script>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>

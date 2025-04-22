@@ -4,6 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+include_once '../includes/config.php';
+include_once '../includes/db_connect.php';
+
 $page_title = "Manage Products - AgroFarm";
 $page_description = "Manage products in the AgroFarm store";
 
@@ -13,8 +16,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     exit;
 }
 
-include_once '../includes/config.php';
-include_once '../includes/db_connect.php';
 include_once '../includes/header.php';
 
 // Handle product deletion
@@ -260,4 +261,4 @@ try {
     });
 </script>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>

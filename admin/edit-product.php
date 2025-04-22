@@ -1,10 +1,16 @@
 <?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../includes/config.php';
 require_once '../includes/db_connect.php';
 
 // Check if user is logged in and is an admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    redirect('/pages/login.php');
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header('Location: ' . SITE_URL . '/pages/login.php');
+    exit;
 }
 
 $page_title = "Edit Product - Admin Dashboard";
@@ -14,7 +20,8 @@ $product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($product_id === 0) {
     setFlashMessage('error', 'Invalid product ID');
-    redirect('/admin/products.php');
+    header('Location: ' . SITE_URL . '/admin/products.php');
+    exit;
 }
 
 // Handle form submission
@@ -100,7 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         setFlashMessage('success', 'Product updated successfully');
-        redirect('/admin/products.php');
+        header('Location: ' . SITE_URL . '/admin/products.php');
+        exit;
 
     } catch (Exception $e) {
         setFlashMessage('error', $e->getMessage());
@@ -120,7 +128,8 @@ try {
 
     if (!$product) {
         setFlashMessage('error', 'Product not found');
-        redirect('/admin/products.php');
+        header('Location: ' . SITE_URL . '/admin/products.php');
+        exit;
     }
 
     // Fetch categories for dropdown
@@ -130,7 +139,8 @@ try {
 } catch (PDOException $e) {
     error_log("Error fetching product: " . $e->getMessage());
     setFlashMessage('error', 'Error fetching product details');
-    redirect('/admin/products.php');
+    header('Location: ' . SITE_URL . '/admin/products.php');
+    exit;
 }
 
 include_once '../includes/header.php';
@@ -143,7 +153,7 @@ include_once '../includes/navbar.php';
         <div class="max-w-3xl mx-auto">
             <div class="flex justify-between items-center mb-8">
                 <h1 class="text-3xl font-bold">Edit Product</h1>
-                <a href="/admin/products.php" class="text-gray-600 hover:text-gray-900">
+                <a href="<?php echo SITE_URL; ?>/admin/products.php" class="text-gray-600 hover:text-gray-900">
                     Back to Products
                 </a>
             </div>
@@ -245,7 +255,7 @@ include_once '../includes/navbar.php';
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Current Image</label>
                         <div class="mt-2">
-                            <img src="/<?php echo htmlspecialchars($product['image']); ?>" 
+                            <img src="<?php echo SITE_URL; ?>/assets/images/products/<?php echo htmlspecialchars($product['image']); ?>" 
                                  alt="<?php echo htmlspecialchars($product['name']); ?>" 
                                  class="h-32 w-32 object-cover rounded-lg">
                             <input type="hidden" name="current_image" value="<?php echo htmlspecialchars($product['image']); ?>">
@@ -276,4 +286,4 @@ include_once '../includes/navbar.php';
     </div>
 </main>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>
