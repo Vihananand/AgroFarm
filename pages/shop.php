@@ -590,26 +590,29 @@ async function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
     
-    const quantity = parseInt(document.getElementById(`quantity-${productId}`).value);
-    if (!validateQuantity(productId, product.stock)) return;
+    const quantity = parseInt(document.getElementById(`quantity-${productId}`)?.value || 1);
+    if (document.getElementById(`quantity-${productId}`) && !validateQuantity(productId, product.stock)) return;
     
     try {
-        const response = await fetch('/AgroFarm/api/cart.php', {
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('quantity', quantity);
+
+        const response = await fetch('/AgroFarm/includes/ajax/add_to_cart.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: quantity
-            })
+            body: formData
         });
 
         const data = await response.json();
         
         if (data.success) {
+            // Update cart count in navbar
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = data.cart_count;
+            }
+            
             // Show success message
-            const modal = document.getElementById('product-modal');
             const successMessage = document.createElement('div');
             successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
             successMessage.textContent = data.message;
@@ -620,19 +623,24 @@ async function addToCart(productId) {
                 successMessage.remove();
             }, 3000);
             
-            // Close the modal
-            closeProductModal();
+            // Close the modal if it exists
+            const modal = document.getElementById('product-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeProductModal();
+            }
         } else {
             // Show error message
             const errorElement = document.getElementById(`quantity-error-${productId}`);
-            errorElement.textContent = data.message;
-            errorElement.classList.remove('hidden');
+            if (errorElement) {
+                errorElement.textContent = data.message;
+                errorElement.classList.remove('hidden');
+            } else {
+                alert(data.message || 'Failed to add product to cart');
+            }
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
-        const errorElement = document.getElementById(`quantity-error-${productId}`);
-        errorElement.textContent = 'An error occurred while adding to cart. Please try again.';
-        errorElement.classList.remove('hidden');
+        alert('An error occurred while adding to cart. Please try again.');
     }
 }
 

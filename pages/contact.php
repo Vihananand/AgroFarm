@@ -23,8 +23,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Please provide a valid email address.';
     } else {
         try {
-            $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$name, $email, $subject, $message]);
+            // Check database connection
+            if (!$conn) {
+                throw new Exception('Database connection failed');
+            }
+
+            // Check if the table exists
+            $table_exists = $conn->query("SHOW TABLES LIKE 'contact_messages'")->rowCount() > 0;
+            
+            if (!$table_exists) {
+                $conn->exec("CREATE TABLE IF NOT EXISTS contact_messages (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT,
+                    name VARCHAR(100) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    subject VARCHAR(255) NOT NULL,
+                    message TEXT NOT NULL,
+                    status ENUM('new', 'read', 'replied', 'closed') DEFAULT 'new',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+
+            // Insert the message
+            $stmt = $conn->prepare("INSERT INTO contact_messages (user_id, name, email, subject, message, status) VALUES (?, ?, ?, ?, ?, 'new')");
+            $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            $stmt->execute([$user_id, $name, $email, $subject, $message]);
             
             $form_submitted = true;
             $success_message = 'Thank you for your message. We will get back to you soon.';
@@ -32,9 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Log success
             error_log("Contact message submitted successfully from: " . $email);
         } catch (PDOException $e) {
-            error_log("Error submitting contact message: " . $e->getMessage());
+            error_log("Database error in contact.php: " . $e->getMessage());
             $form_error = true;
             $error_message = 'An error occurred while submitting your message. Please try again later.';
+        } catch (Exception $e) {
+            error_log("General error in contact.php: " . $e->getMessage());
+            $form_error = true;
+            $error_message = $e->getMessage();
         }
     }
 }
@@ -46,7 +75,7 @@ include_once '../includes/navbar.php';
 <!-- Hero Section with Parallax Effect -->
 <section class="relative bg-green-900 text-white py-24 overflow-hidden">
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1596524430615-b46475ddff6e?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); opacity: 0.3;"></div>
-    <div class="container mx-auto px-4 z-10 relative">
+    <div class="container mx-auto px-4 z-10 relative"></div>
         <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-6" data-aos="fade-up">Contact Us</h1>
             <p class="text-xl md:text-2xl mb-8 text-green-100" data-aos="fade-up" data-aos-delay="100">
@@ -136,10 +165,6 @@ include_once '../includes/navbar.php';
                 <div data-aos="fade-right">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-3xl font-bold">Send Us a Message</h2>
-                        <a href="<?php echo SITE_URL; ?>/pages/contact-history.php" class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors duration-300 shadow-sm">
-                            <i class="fas fa-history mr-2"></i>
-                            <span>View History</span>
-                        </a>
                     </div>
                     <p class="text-gray-600 mb-8">
                         Have questions about our products or services? Fill out the form below and our team will get back to you as soon as possible.
@@ -415,4 +440,4 @@ include_once '../includes/navbar.php';
     });
 </script>
 
-<?php include_once '../includes/footer.php'; ?> 
+<?php include_once '../includes/footer.php'; ?>

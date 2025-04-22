@@ -122,18 +122,47 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </div>
 
 <script>
-    document.getElementById('search-toggle').addEventListener('click', function() {
-        document.getElementById('search-bar').classList.toggle('hidden');
+    // Search functionality
+    const searchToggle = document.getElementById('search-toggle');
+    const searchBar = document.getElementById('search-bar');
+    const searchInput = searchBar.querySelector('input[name="q"]');
+
+    // Toggle search bar
+    function toggleSearch() {
+        searchBar.classList.toggle('hidden');
+        if (!searchBar.classList.contains('hidden')) {
+            searchInput.focus();
+        }
+    }
+
+    // Event listeners
+    searchToggle.addEventListener('click', toggleSearch);
+
+    // Close search bar with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !searchBar.classList.contains('hidden')) {
+            searchBar.classList.add('hidden');
+        }
+        // Ctrl/Cmd + K to open search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            toggleSearch();
+        }
     });
-    
-    document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
-        document.getElementById('mobile-menu').classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; 
+
+    // Mobile menu functionality
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuToggle.addEventListener('click', function() {
+        mobileMenu.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     });
-    
-    document.getElementById('mobile-menu-close').addEventListener('click', function() {
-        document.getElementById('mobile-menu').classList.add('hidden');
-        document.body.style.overflow = ''; 
+
+    mobileMenuClose.addEventListener('click', function() {
+        mobileMenu.classList.add('hidden');
+        document.body.style.overflow = '';
     });
 
     // User menu dropdown functionality
@@ -142,20 +171,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
     const userMenuContainer = document.getElementById('user-menu-container');
 
     if (userMenuButton && userMenuDropdown) {
-        // Toggle menu on button click
         userMenuButton.addEventListener('click', (e) => {
             e.stopPropagation();
             userMenuDropdown.classList.toggle('hidden');
         });
 
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!userMenuContainer.contains(e.target)) {
                 userMenuDropdown.classList.add('hidden');
             }
         });
 
-        // Prevent menu from closing when clicking inside dropdown
         userMenuDropdown.addEventListener('click', (e) => {
             e.stopPropagation();
         });

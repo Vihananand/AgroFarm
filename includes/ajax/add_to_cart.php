@@ -1,13 +1,27 @@
 <?php
 require_once '../config.php';
+require_once '../db_connect.php';
+require_once '../cart_functions.php';
 
 header('Content-Type: application/json');
+
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $response = [
     'success' => false,
     'message' => 'An error occurred.',
     'cart_count' => 0
 ];
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    $response['message'] = 'Please login to add items to cart';
+    echo json_encode($response);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Invalid request method.';
@@ -23,6 +37,7 @@ if (!isset($_POST['product_id']) || !isset($_POST['quantity'])) {
 
 $product_id = (int)$_POST['product_id'];
 $quantity = (int)$_POST['quantity'];
+$user_id = $_SESSION['user_id'];
 
 if ($product_id <= 0) {
     $response['message'] = 'Invalid product ID.';
@@ -36,101 +51,7 @@ if ($quantity <= 0) {
     exit;
 }
 
-try {
-    $all_products = [
-        1 => [
-            'id' => 1,
-            'name' => 'Organic Fertilizer',
-            'stock' => 15,
-        ],
-        2 => [
-            'id' => 2,
-            'name' => 'Premium Garden Hoe',
-            'stock' => 8,
-        ],
-        3 => [
-            'id' => 3,
-            'name' => 'Organic Tomato Seeds',
-            'stock' => 50,
-        ],
-        4 => [
-            'id' => 4,
-            'name' => 'Mini Tractor',
-            'stock' => 0,
-        ],
-        5 => [
-            'id' => 5,
-            'name' => 'Fresh Apples (5kg)',
-            'stock' => 20,
-        ],
-        6 => [
-            'id' => 6,
-            'name' => 'Gardening Gloves',
-            'stock' => 30,
-        ],
-        7 => [
-            'id' => 7,
-            'name' => 'Carrot Seeds',
-            'stock' => 45,
-        ],
-        8 => [
-            'id' => 8,
-            'name' => 'Irrigation System',
-            'stock' => 10,
-        ],
-        9 => [
-            'id' => 9,
-            'name' => 'Potato Harvester',
-            'stock' => 5,
-        ],
-        10 => [
-            'id' => 10,
-            'name' => 'Organic Strawberries (1kg)',
-            'stock' => 15,
-        ]
-    ];
-    
-    if (!isset($all_products[$product_id])) {
-        $response['message'] = 'Product not found.';
-        echo json_encode($response);
-        exit;
-    }
-    
-    $product = $all_products[$product_id];
-    
-    if ($product['stock'] < $quantity) {
-        $response['message'] = 'Not enough stock available. Only ' . $product['stock'] . ' items left.';
-        echo json_encode($response);
-        exit;
-    }
-    
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-    
-    if (isset($_SESSION['cart'][$product_id])) {
-        $new_quantity = $_SESSION['cart'][$product_id] + $quantity;
-        
-        if ($new_quantity > $product['stock']) {
-            $response['message'] = 'Cannot add more of this item. Stock limit reached.';
-            echo json_encode($response);
-            exit;
-        }
-        
-        $_SESSION['cart'][$product_id] = $new_quantity;
-        $response['success'] = true;
-        $response['message'] = 'Cart updated successfully.';
-    } else {
-        $_SESSION['cart'][$product_id] = $quantity;
-        $response['success'] = true;
-        $response['message'] = 'Item added to cart successfully.';
-    }
-    
-    $response['cart_count'] = array_sum($_SESSION['cart']);
-    
-} catch (Exception $e) {
-    $response['message'] = $e->getMessage();
-}
-
-echo json_encode($response);
-exit; 
+// Add to cart using the cart functions
+$result = addToCart($user_id, $product_id, $quantity);
+echo json_encode($result);
+exit;

@@ -47,4 +47,4 @@ function getDBConnection() {
 
 // Create a global connection variable
 $conn = getDBConnection();
-?> 
+?>
